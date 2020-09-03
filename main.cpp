@@ -47,8 +47,7 @@ void exercise3()
 		days = 31;
 		break;
 	case 2:
-		if (year % 4 == 0) days = 29;
-		else days == 28;
+		days = ( year % 4 == 0 ? 29 : 28 );
 		break;
 	case 3: 
 		days = 31;
@@ -219,8 +218,7 @@ void exercise5()
 		mul2 *= -1;
 		mul1 += mul2;
 		b = (a % 10) * mul1;
-		if (b >= 10) sum += (b % 10) + (b / 10);
-		else sum += b;
+		sum += (b >= 10 ? (b % 10) + (b / 10) : b);
 		a /= 10;
 	}
 	
