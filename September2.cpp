@@ -35,72 +35,6 @@ void exercise2()
 	else printf("Scalene \n");
 }
 
-void exercise3()
-{
-	// teacher said not to do, did it anyways lol
-	int day, month, year, days;
-
-	scanf("%d/%d/%d", &day, &month, &year);
-
-	switch (month)
-	{
-	case 1: 
-		days = 31;
-		break;
-	case 2:
-		days = ( year % 4 == 0 ? 29 : 28 );
-		break;
-	case 3: 
-		days = 31;
-		break;
-	case 4: 
-		days = 30;
-		break;
-	case 5: 
-		days = 31;
-		break;
-	case 6:
-		days = 30;
-		break;
-	case 7:
-		days = 31;
-		break;
-	case 8:
-		days = 31;
-		break;
-	case 9:
-		days = 30;
-		break;
-	case 10:
-		days = 31;
-		break;
-	case 11:
-		days = 30;
-		break;
-	case 12:
-		days = 31;
-		break;
-	}
-
-	if (day + 1 > days)
-	{
-		if (month + 1 > 12)
-		{
-			year++;
-			day = 1;
-			month = 1;
-		}
-		else
-		{
-			month++;
-			day = 1;
-		}
-	}
-	else day++;
-
-	printf("tomorrow is %d/%d/%d \n", day, month, year);
-}
-
 void exercise4()
 {
 	char a, b;
@@ -243,5 +177,4 @@ void main()
 	exercise42();
 	exercise5();
 	randexercise();
-	exercise3();
 }
