@@ -27,7 +27,7 @@ void dateexercise()
 
 		if ((month > 12 || month < 1) || (day > days || day < 1)) 
 		{
-			printf("invalid");
+			printf("invalid \n");
 			return;
 		}
 
@@ -47,11 +47,11 @@ void angleexercise()
 	
 	switch (angle / 90)
 	{
-	case 0: printf((angle > 0) ? "hada" : "0 degrees");
+	case 0: printf((angle > 0) ? "hada \n" : "0 degrees \n");
 		break;
-	case 1: printf((angle > 90) ? "keha" : "90 degrees");
+	case 1: printf((angle > 90) ? "keha \n" : "90 degrees \n");
 		break;
-	case 2: printf("180 degrees");
+	case 2: printf("180 degrees \n");
 		break;
 	}
 }
@@ -86,12 +86,73 @@ void f4()
 
 void f5()
 {
-	printf("\123\105\122\123");
+	printf("\123\105\122\123 \n");
+}
+
+void exercise1()
+{
+	int num1, num2, pos = 0, neg = 0, possum = 0;
+
+	scanf("%d", &num1);
+	
+	for (int i = 0; i < num1; i++)
+	{
+		scanf("%d", &num2);
+		if (num2 != 0) (num2 > 0) ? pos++, possum += num2 : neg++;
+	}
+
+	printf("positive: %d negative: %d positive sum: %d", pos, neg, possum / pos);
+}
+
+void exercise2()
+{
+	int a, b, c, avg, bigavg = 0, otheravg = 0, count = 0;
+
+	for (int i = 0; i < 100; i++)
+	{
+		scanf("%d %d %d", &a, &b, &c);
+		avg = (a + b + c) / 3;
+		printf("average %d \n", avg);
+		printf((a == avg) ? "YES \n" : "NO \n");
+		bigavg += avg;
+		if (a == b && b == c)
+		{
+			count++;
+			otheravg += a;
+		}
+	}
+
+	printf("big average %d, equal average %d \n", bigavg / 100, otheravg / count);
+}
+
+void exercise3()
+{
+	int male, female, fams, count = 0, favg = 0;
+
+	scanf("%d", &fams);
+
+	for (int i = 0; i < fams; i++)
+	{
+		scanf("%d %d", &male, &female);
+		
+		if (male == female) count++;
+
+		printf("number of kids %d \n", male + female);
+
+		favg += female;
+	}
+
+	printf("num of equals: %d average female count: %d \n", count, favg / fams);
+}
+
+void exercise4()
+{
+
 }
 
 void main()
 {
-	
+	/*
 	dateexercise();
 	angleexercise();
 	f1();
@@ -99,4 +160,8 @@ void main()
 	f3();
 	f4();
 	f5();
+	exercise1();
+	exercise2();
+	*/
+	exercise3();
 }
