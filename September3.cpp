@@ -43,19 +43,60 @@ void angleexercise()
 	scanf("%d", &angle);
 
 	while (angle < 0) angle += 360;
-
+	angle = (angle > 360) ? angle % 360 : angle;
+	
 	switch (angle / 90)
 	{
-	//case 0: printf(());
-	case 1: printf("90 degrees");
+	case 0: printf((angle > 0) ? "hada" : "0 degrees");
 		break;
-	case 2:
+	case 1: printf((angle > 90) ? "keha" : "90 degrees");
+		break;
+	case 2: printf("180 degrees");
 		break;
 	}
 }
 
+void f1()
+{
+	int a, b, x, y;
+	a = 9;
+	b = 5;
+	printf("a=%d b=%d result=%d\n", a, b, a + ++b);
+	printf("a=%d b=%d result=%d\n", a, b, --b - a++);
+	printf("a=%d b=%d result=%d\n", a, b, a++ + b);
+	printf("a=%d b=%d result=%d\n", a, b, a-- + b);
+	printf("a=%d b=%d result=%d\n", a, b, -a + b++);
+}
+
+void f2()
+{
+
+}
+
+void f3()
+{
+	printf("\tmuse \tHORS \nnavada\n");
+}
+
+void f4()
+{
+	int x = 12, y = 9;
+	printf("%d\n", y += x * y + 5 % 2);
+}
+
+void f5()
+{
+	printf("\123\105\122\123");
+}
+
 void main()
 {
+	
 	dateexercise();
-	//angleexercise();
+	angleexercise();
+	f1();
+	f2();
+	f3();
+	f4();
+	f5();
 }
