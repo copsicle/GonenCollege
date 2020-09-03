@@ -37,6 +37,7 @@ void exercise2()
 
 void exercise3()
 {
+	// teacher said not to do, did it anyways lol
 	int day, month, year, days;
 
 	scanf("%d %d %d", &day, &month, &year);
