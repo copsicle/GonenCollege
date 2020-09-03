@@ -40,7 +40,7 @@ void exercise3()
 	// teacher said not to do, did it anyways lol
 	int day, month, year, days;
 
-	scanf("%d %d %d", &day, &month, &year);
+	scanf("%d/%d/%d", &day, &month, &year);
 
 	switch (month)
 	{
@@ -109,7 +109,7 @@ void exercise4()
 	for (int i = 0; i < 20; i++)
 	{
 		scanf(" %c %c", &a, &b);
-		printf("%d %d \n", a, b);
+		//printf("%d %d \n", a, b);
 		
 		c = (int)a; 
 		d = (int)b;
