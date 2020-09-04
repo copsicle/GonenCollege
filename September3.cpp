@@ -265,6 +265,22 @@ void exercise10()
 
 void exercise11()
 {
+	int num, sum = 0, digits = 0;
+
+	scanf("%d", &num);
+
+	do
+	{
+		digits++;
+		sum += num % 10;
+		num /= 10;
+	} while (num != 0);
+
+	printf("number of digits %d sum of digits %d \n", digits, sum);
+}
+
+void exercise12()
+{
 
 }
 
@@ -288,6 +304,7 @@ void main()
 	exercise8();
 	exercise9();
 	exercise10();
-	*/
 	exercise11();
+	*/
+	exercise12();
 }
