@@ -1,6 +1,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include <time.h>
 
 void dateexercise()
@@ -160,17 +161,31 @@ void exercise4()
 		a = (rand() % 6) + 1;
 	}
 	
-	printf("6 appeared %d times and the smallest number was %d", count, min);
+	printf("6 appeared %d times and the smallest number was %d \n", count, min);
 }
 
 void exercise5()
 {
-	int a, b, c;
+	int a, b, c, curmax, max = 0, maxcount;
 
-	for (int i = 0; i < 100; i++)
+	for (int i = 1; i <= 70; i++)
 	{
 		scanf("%d %d %d", &a, &b, &c);
+		
+		curmax = (a > b) ? ((a > c) ? a : c) : ((b > c) ? b : c);
+
+		printf("max is %d \n", curmax);
+		
+		(curmax >= 0) ? printf("sqrt of max is %.2f \n", sqrt(curmax)) : printf("No sqrt \n");
+
+		if (curmax > max || i == 1)
+		{
+			max = curmax;
+			maxcount = i;
+		}
 	}
+
+	printf("Biggest num was %d in group number %d \n", max, maxcount);
 }
 
 void main()
