@@ -297,6 +297,22 @@ void exercise12()
 
 void exercise13()
 {
+	int num, ans = 0;
+
+	scanf("%d", &num);
+
+	while (num != 0)
+	{
+		ans *= 10;
+		ans += num % 10;
+		num /= 10;
+	}
+
+	printf("backwards %d \n", ans);
+}
+
+void exercise14()
+{
 
 }
 
@@ -322,6 +338,7 @@ void main()
 	exercise10();
 	exercise11();
 	exercise12();
-	*/
 	exercise13();
+	*/
+	exercise14();
 }
