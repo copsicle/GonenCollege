@@ -252,6 +252,19 @@ void exercise9()
 
 void exercise10()
 {
+	int count = 0, num;
+
+	do
+	{
+		count++;
+		scanf("%d", &num);
+	} while (num > 0);
+
+	printf("count %d \n", count);
+}
+
+void exercise11()
+{
 
 }
 
@@ -274,6 +287,7 @@ void main()
 	exercise7();
 	exercise8();
 	exercise9();
-	*/
 	exercise10();
+	*/
+	exercise11();
 }
