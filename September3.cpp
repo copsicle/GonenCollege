@@ -281,6 +281,22 @@ void exercise11()
 
 void exercise12()
 {
+	float num;
+	int digits = 0;
+
+	scanf("%f", &num);
+
+	while ((int)num != 0)
+	{
+		digits++;
+		num /= 10;
+	}
+
+	printf("%d digits \n", digits);
+}
+
+void exercise13()
+{
 
 }
 
@@ -305,6 +321,7 @@ void main()
 	exercise9();
 	exercise10();
 	exercise11();
-	*/
 	exercise12();
+	*/
+	exercise13();
 }
