@@ -214,6 +214,22 @@ void exercise6()
 
 void exercise7()
 {
+	int a = 7, b = -1, num;
+
+	scanf("%d", &num);
+
+	while (num-- > 0)
+	{
+		b *= -1;
+		a += b;
+		(b > 0) ? b++ : b--;
+	}
+
+	printf("answer is %d", a);
+}
+
+void exercise8()
+{
 
 }
 
@@ -233,6 +249,7 @@ void main()
 	exercise4();
 	exercise5();
 	exercise6();
-	*/
 	exercise7();
+	*/
+	exercise8();
 }
