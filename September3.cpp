@@ -225,10 +225,21 @@ void exercise7()
 		(b > 0) ? b++ : b--;
 	}
 
-	printf("answer is %d", a);
+	printf("answer is %d \n", a);
 }
 
 void exercise8()
+{
+	int num, cur = 2;
+
+	scanf("%d", &num);
+
+	while (cur != num) if (num % cur++ == 0) break;
+
+	printf((cur == num) ? "Number is prime \n" : "Number is not prime \n");
+}
+
+void exercise9()
 {
 
 }
@@ -250,6 +261,7 @@ void main()
 	exercise5();
 	exercise6();
 	exercise7();
-	*/
 	exercise8();
+	*/
+	exercise9();
 }
