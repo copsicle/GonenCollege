@@ -1,5 +1,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
 void dateexercise()
 {
@@ -147,7 +149,28 @@ void exercise3()
 
 void exercise4()
 {
+	srand((unsigned)time(NULL));
+	
+	int a = (rand() % 6) + 1, count = 0, min = a;
 
+	for (int i = 0; i < 49; i++)
+	{
+		if (a == 6) count++;
+		if (a < min) min = a;
+		a = (rand() % 6) + 1;
+	}
+	
+	printf("6 appeared %d times and the smallest number was %d", count, min);
+}
+
+void exercise5()
+{
+	int a, b, c;
+
+	for (int i = 0; i < 100; i++)
+	{
+		scanf("%d %d %d", &a, &b, &c);
+	}
 }
 
 void main()
@@ -162,6 +185,8 @@ void main()
 	f5();
 	exercise1();
 	exercise2();
-	*/
 	exercise3();
+	exercise4();
+	*/
+	exercise5();
 }
