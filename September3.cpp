@@ -94,14 +94,14 @@ void f5()
 
 void exercise1()
 {
-	int num1, num2, pos = 0, neg = 0, possum = 0;
+	int i, num, pos = 0, neg = 0, possum = 0;
 
-	scanf("%d", &num1);
+	scanf("%d", &i);
 	
-	for (int i = 0; i < num1; i++)
+	while(i-- > 0)
 	{
-		scanf("%d", &num2);
-		if (num2 != 0) (num2 > 0) ? pos++, possum += num2 : neg++;
+		scanf("%d", &num);
+		if (num != 0) (num > 0) ? pos++, possum += num : neg++;
 	}
 
 	printf("positive: %d negative: %d positive sum: %d", pos, neg, possum / pos);
@@ -188,6 +188,35 @@ void exercise5()
 	printf("Biggest num was %d in group number %d \n", max, maxcount);
 }
 
+void exercise6()
+{
+	int famnum, sibnum, fams, perfam = 0, persib = 0, sibsum = 0, count = 0;;
+
+	scanf("%d", &fams);
+
+	for (int i = 1; i <= fams; i++)
+	{
+		scanf("%d %d", &famnum, &sibnum);
+
+		if (sibnum <= persib || i == 1)
+		{
+			perfam = famnum;
+			persib = sibnum;
+		}
+
+		if (sibnum % 2 == 0) count++;
+
+		sibsum += sibnum;
+	}
+
+	printf("the last smallest family has the number %d and the average is %d and amount with modulo 2 is %d \n", perfam, sibsum / fams, count);
+}
+
+void exercise7()
+{
+
+}
+
 void main()
 {
 	/*
@@ -202,6 +231,8 @@ void main()
 	exercise2();
 	exercise3();
 	exercise4();
-	*/
 	exercise5();
+	exercise6();
+	*/
+	exercise7();
 }
