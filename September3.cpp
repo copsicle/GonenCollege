@@ -73,7 +73,7 @@ void f1()
 
 void f2()
 {
-
+	// where the char one goes if im not too lazy
 }
 
 void f3()
@@ -241,6 +241,17 @@ void exercise8()
 
 void exercise9()
 {
+	int num, sum = 0, mod = 1;
+
+	scanf("%d", &num);
+
+	while (mod != num) (num % mod == 0) ? sum += mod++ : mod++;
+
+	printf((sum == num) ? "Perfect number \n" : "Not a perfect number \n");
+}
+
+void exercise10()
+{
 
 }
 
@@ -262,6 +273,7 @@ void main()
 	exercise6();
 	exercise7();
 	exercise8();
-	*/
 	exercise9();
+	*/
+	exercise10();
 }
