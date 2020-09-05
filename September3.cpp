@@ -313,21 +313,23 @@ void exercise13()
 
 void exercise14()
 {
-	int num, lastnum = 0, i, ans = 0;
+	int num, lastnum = 0, i = 0, ans = 0;
 
-	do
+	scanf("%d", &num);
+
+	while (num > 0)
 	{
-		scanf("%d", &num);
-
-		for (i = 1; num > lastnum; i++)
+		if (num > lastnum) i++;
+		else
 		{
-			lastnum = num;
-			scanf("%d", &num);
+			if (i > ans) ans = i;
+			i = 1;
 		}
 
-		if (i > ans) ans = i;
+		lastnum = num;
 
-	} while (num != 0);
+		scanf("%d", &num);
+	}
 
 	printf("highest amount of rising series %d \n", ans);
 }
