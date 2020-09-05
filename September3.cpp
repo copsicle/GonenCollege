@@ -234,7 +234,7 @@ void exercise8()
 
 	scanf("%d", &num);
 
-	while (cur != num) if (num % cur++ == 0) break;
+	while (cur != num && num > 1) if (num % cur++ == 0) break;
 
 	printf((cur == num) ? "Number is prime \n" : "Number is not prime \n");
 }
@@ -313,12 +313,74 @@ void exercise13()
 
 void exercise14()
 {
+	int num, lastnum = 0, i, ans = 0;
 
+	do
+	{
+		scanf("%d", &num);
+
+		for (i = 1; num > lastnum; i++)
+		{
+			lastnum = num;
+			scanf("%d", &num);
+		}
+
+		if (i > ans) ans = i;
+
+	} while (num != 0);
+
+	printf("highest amount of rising series %d \n", ans);
+}
+
+void exercise15()
+{
+	int num, cur, count = 0;
+
+	for (int i = 0; i < 30; i++)
+	{
+		scanf("%d", &num);
+
+		cur = 2;
+
+		while (cur != num && num > 1) if (num % cur++ == 0) break;
+
+		if (cur == num) count++;
+	}
+
+	printf("Found %d prime numbers \n", count);
+}
+
+void exercise16()
+{
+	/*
+	not my code lol it's from the page
+	a. this number isn't triangle
+	b. 153
+	c. this number isn't triangle
+	d. a=xyz
+	a=x^3+y^3+z^3
+	*/
+	int n;
+	long int mult, sum, temp;
+	
+	printf("enter the number \n");
+	scanf("%d", &n);
+	
+	temp = n; sum = 0;
+	
+	do
+	{
+		mult = pow((temp % 10), 3);
+		sum += mult;
+		temp /= 10;
+	} while (temp > 0);
+
+	if (sum == n) printf("%ld\n", sum);
+	else printf("this number isn't triangle");
 }
 
 void main()
 {
-	/*
 	dateexercise();
 	angleexercise();
 	f1();
@@ -339,6 +401,7 @@ void main()
 	exercise11();
 	exercise12();
 	exercise13();
-	*/
 	exercise14();
+	exercise15();
+	exercise16();
 }
