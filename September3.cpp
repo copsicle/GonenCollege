@@ -104,7 +104,7 @@ void exercise1()
 		if (num != 0) (num > 0) ? pos++, possum += num : neg++;
 	}
 
-	printf("positive: %d negative: %d positive sum: %d", pos, neg, possum / pos);
+	printf("positive: %d negative: %d positive sum: %d \n", pos, neg, possum / pos);
 }
 
 void exercise2()
@@ -378,10 +378,10 @@ void exercise16()
 	} while (temp > 0);
 
 	if (sum == n) printf("%ld\n", sum);
-	else printf("this number isn't triangle");
+	else printf("this number isn't triangle \n");
 }
 
-void main()
+int main()
 {
 	dateexercise();
 	angleexercise();
@@ -406,4 +406,6 @@ void main()
 	exercise14();
 	exercise15();
 	exercise16();
+
+	return 0;
 }

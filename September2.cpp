@@ -167,7 +167,7 @@ void randexercise()
 	printf("%d \n", r1);
 }
 
-void main()
+int main()
 {	
 	exercise1();
 	exercise2();
@@ -177,4 +177,6 @@ void main()
 	exercise42();
 	exercise5();
 	randexercise();
+
+	return 0;
 }
