@@ -74,7 +74,8 @@ void calcexercise1()
 void calcexercise2()
 {
     char c;
-    int num1, sum, num2;
+    int num1, num2;
+    float num, sum;
 
     scanf(" %c", &c);
 
@@ -84,14 +85,14 @@ void calcexercise2()
         {
         case '+':
         case '*':
-            scanf("%d", &num1);
-            sum = (c == '+') ? 0 : 1;
-            while ((c == '+') ? num1 != 0 : num1 != 1)
+            scanf("%f", &num);
+            sum = (c == '+') ? 0.0f : 1.0f;
+            while ((c == '+') ? num != 0 : num != 1)
             {
-                sum = (c == '+') ? sum + num1 : sum * num1;
-                scanf("%d", &num1);
+                sum = (c == '+') ? sum + num : sum * num;
+                scanf("%f", &num);
             }
-            printf("%d \n", sum);
+            printf("%f \n", sum);
             break;
         case '-':
         case '/':
@@ -100,7 +101,12 @@ void calcexercise2()
             if (c == '-') printf("%d \n", num1 - num2);
             else if (c == '/')
             {
-                printf("%d \n", num2 / num1);
+                if (num1 != 0) printf("%d \n", num2 / num1);
+                else
+                {
+                    printf("ERROR \n");
+                    break;
+                }
                 if (num2 % num1 != 0) printf("%d \n", num2 % num1);
             }
             else printf("%f \n", pow(num1, num2));
@@ -121,6 +127,6 @@ int main()
     algoexercise();
     calcexercise1();
     */
-    calcexercise2();
+    calcexercise1();
     return 0;
 }
