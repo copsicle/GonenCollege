@@ -30,7 +30,7 @@ void algoexercise()
 
 void calcexercise1()
 {
-    long a, b, c, count1 = 0, ans = 0, mod = 0, div = 0, count2 = 0;
+    int a, b, c, count1 = 0, ans = 0, mod = 0, div = 0, count2 = 0;
 
     scanf("%d %d %d", &a, &b, &c);
 
@@ -74,12 +74,42 @@ void calcexercise1()
 void calcexercise2()
 {
     char c;
+    int num1, sum, num2;
 
-    while(c = getchar() != '_')
+    scanf(" %c", &c);
+
+    while(c != '_')
     {
         switch (c)
         {
+        case '+':
+        case '*':
+            scanf("%d", &num1);
+            sum = (c == '+') ? 0 : 1;
+            while ((c == '+') ? num1 != 0 : num1 != 1)
+            {
+                sum = (c == '+') ? sum + num1 : sum * num1;
+                scanf("%d", &num1);
+            }
+            printf("%d \n", sum);
+            break;
+        case '-':
+        case '/':
+        case '^':
+            scanf("%d %d", &num1, &num2);
+            if (c == '-') printf("%d \n", num1 - num2);
+            else if (c == '/')
+            {
+                printf("%d \n", num2 / num1);
+                if (num2 % num1 != 0) printf("%d \n", num2 % num1);
+            }
+            else printf("%f \n", pow(num1, num2));
+            break;
+        default:
+            printf("??? \n");
         }
+
+        scanf(" %c", &c);
     }
 
     printf("bye \n");
@@ -89,7 +119,8 @@ int main()
 {
     /*
     algoexercise();
-    */
     calcexercise1();
+    */
+    calcexercise2();
     return 0;
 }
