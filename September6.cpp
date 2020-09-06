@@ -123,10 +123,9 @@ void calcexercise2()
 
 int main()
 {
-    /*
     algoexercise();
     calcexercise1();
-    */
-    calcexercise1();
+    calcexercise2();
+
     return 0;
 }
