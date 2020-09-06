@@ -234,9 +234,9 @@ void exercise8()
 
 	scanf("%d", &num);
 
-	while (cur != num && num > 1) if (num % cur++ == 0) break;
+	while (cur != num && num > 1 && cur <= sqrt(num)) if (num % cur++ == 0) break;
 
-	printf((cur == num) ? "Number is prime \n" : "Number is not prime \n");
+	printf((cur == num || cur > sqrt(num)) ? "Number is prime \n" : "Number is not prime \n");
 }
 
 void exercise9()
