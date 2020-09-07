@@ -1,42 +1,41 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include <time.h>
 
 int exercise1(int num, int dig);
-
 int exercise2a(int num1, int num2);
 void exercise2b();
-
 int exercise3a(int num);
 void exercise3b();
-
 int exercise4a(int num);
 void exercise4b();
-
 int exercise5a(int num);
 void exercise5b();
-
 void exercise6a(int num, int digit);
 void exercise6b();
-
-void exercise7a(int num);
+void exercise7a(int *num);
 void exercise7b();
-
 int exercise12(int num1, int num2, int num3);
-
 void exercise22(int n);
-
 int exercise32(int num);
-
 int exercise42();
+int exercise52(int num);
+void exercise62(int *num1, int *num2);
+int exercise72(int arr[], int length);
+int exercise8(int arr[], int length);
+void exercise9(int n);
+void exercise10a(int from, int to);
+void exercise10b();
+int special_num(int num);
+void exercise11();
 
 int main()
 {
-    int ans;
-
+    int ans, num1 = 13, num2 = 19, arr[] = {1, 2, 3, 4, 5}, len = sizeof(arr) / sizeof(int);
     srand(time(NULL));
-    /*
+    
     ans = exercise1(4204204, 4);
     printf("%d \n", ans);
     exercise2b();
@@ -45,8 +44,7 @@ int main()
     exercise5b();
     exercise6b();
     exercise7b();
-    */
-
+    
     ans = exercise12(3, 3, 2);
     printf("%d \n", ans);
     exercise22(27);
@@ -54,6 +52,14 @@ int main()
     printf("%d \n", ans);
     ans = exercise42();
     printf("%d \n", ans);
+    ans = exercise52(123321);
+    printf("%d \n", ans);
+    exercise62(&num1, &num2);
+    exercise72(arr, len);
+    exercise8(arr, len);
+    exercise9(4);
+    exercise10b();
+    exercise11();
 
     return 0;
 }
@@ -134,7 +140,7 @@ int exercise4a(int num)
         cur++;
     }
 
-    return (num == sum) ? 1 : 0;
+    return (num == sum);
 }
 
 void exercise4b() { for (int i = 10; i <= 1000; i++) if (exercise4a(i)) printf("%d \n", i); }
@@ -257,4 +263,87 @@ int exercise42()
     }
 
     return ans;
+}
+
+int exercise52(int num)
+{
+    int mul1 = 1, mul2 = 1;
+
+	while (num / mul1 > 10) mul1 *= 10;
+	
+	int dig1 = num % 10, dig2 = num / mul1;
+
+	while (1)
+	{
+		if (dig1 != dig2) return 0;
+		else if (mul1 == mul2 || mul1 == mul2 * 10) return 1;
+
+		mul1 /= 10;
+		mul2 *= 10;
+
+		dig1 = (num / mul2) % 10;
+		dig2 = (num / mul1) % 10;
+	}
+}
+
+void exercise62(int *num1, int *num2)
+{
+    if (num2 > num1)
+    {
+        int temp = *num1;
+        *num1 = *num2;
+        *num2 = temp;
+    }
+}
+
+int exercise72(int arr[], int length)
+{
+    int count = 0;
+
+    for (int i = 0; i < length; i++) if (i > 0 && arr[i] > arr[i - 1]) count++;
+
+    return count;
+}
+
+int exercise8(int arr[], int length)
+{
+    for (int i = 0; i < length; i++) if (arr[i] > 99 || arr[i] < 10) return 0;
+    return 1;
+}
+
+void exercise9(int n)
+{
+    int layer = 0;
+
+    while (layer++ < n)
+    {
+        for (int i = layer; i >= 1; i--) printf("%d ", i);
+        for (int i = 2; i <= layer; i++) printf("%d ", i);
+        printf("\n");
+    }
+}
+
+void exercise10a(int from, int to) { for (int i = from; i < to; i++) if ((i / 100) + ((i / 10) % 10) == pow(i % 10, 2)) printf("%d \n", i); }
+
+void exercise10b() { exercise10a(500, 600); }
+
+int special_num(int num)
+{
+    int ans = 0, original = num;
+
+    while (num != 0)
+	{
+		ans *= 10;
+		ans += num % 10;
+		num /= 10;
+	}
+
+    return (original * 4 == ans);
+}
+
+void exercise11()
+{
+    int count = 0;
+    for (int i = 1000; i < 10000; i++) if (special_num(i)) count++;
+    printf("There are %d special numbers with 4 digits \n", count);
 }
