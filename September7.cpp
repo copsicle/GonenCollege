@@ -23,18 +23,37 @@ void exercise6b();
 void exercise7a(int num);
 void exercise7b();
 
+int exercise12(int num1, int num2, int num3);
+
+void exercise22(int n);
+
+int exercise32(int num);
+
+int exercise42();
+
 int main()
 {
+    int ans;
+
     srand(time(NULL));
     /*
-    printf("%d \n", exercise1(4204204, 4));
+    ans = exercise1(4204204, 4);
+    printf("%d \n", ans);
     exercise2b();
     exercise3b();
     exercise4b();
     exercise5b();
     exercise6b();
+    exercise7b();
     */
 
+    ans = exercise12(3, 3, 2);
+    printf("%d \n", ans);
+    exercise22(27);
+    ans = exercise32(123);
+    printf("%d \n", ans);
+    ans = exercise42();
+    printf("%d \n", ans);
 
     return 0;
 }
@@ -180,7 +199,62 @@ void exercise6b()
     }
 }
 
-void exercise7a(int num)
+void exercise7a(int *num)
 {
+    int mul = 1;
+
+    while (*num / mul != 0)
+    {
+        if ((*num / mul) % 10 == 1)
+        {
+            *num -= mul;
+            *num += mul / 10;
+        }
+
+        mul *= 10;
+    }
+}
+
+void exercise7b()
+{
+    int num, n;
+
+    scanf("%d %d", &num, &n);
+
+    while (n-- > 0 && num <= 1111) exercise7a(&num);
+
+    printf("%d \n", num);
+}
+
+int exercise12(int num1, int num2, int num3) { return (num1 == num2) && (num2 == num3); }
+
+void exercise22(int n) { for (int i = 1; i < n; i++) if (i % 3 == 0) printf("%d \n", i); }
+
+int exercise32(int num)
+{
+    int count = 0;
     
+    while (num > 0)
+    {
+        count++;
+        num /= 10;
+    }
+
+    return count;
+}
+
+int exercise42()
+{
+    char ch;
+
+    int ans = 0;
+
+    while((ch = getchar()) != '*')
+    {
+        if (ch == EOF || ch == '\n') continue;
+        ans *= 10;
+        ans += (int)ch - 48;
+    }
+
+    return ans;
 }
