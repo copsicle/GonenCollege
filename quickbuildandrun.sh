@@ -1,3 +1,3 @@
 #!/bin/bash
-gcc $1 -o ./build/prog $2
+g++ -g $1 $2 -o ./build/prog
 ./build/prog

@@ -1,23 +1,6 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
-
-void printarr(int arr[], int size)
-{
-    if (size == 0) size = sizeof(arr) / sizeof(int);
-    
-    printf("Array with size of %d \n[", size);
-
-    for(int i = 0; i < size; i++) printf("%d, ", arr[i]);
-
-    printf("\b\b] \n");
-}
-
-void swap(int* a, int* b)
-{
-    int temp = *a;
-    *a = *b;
-    *b = temp;
-}
+#include "Header.h"
 
 void exercise2()
 {
@@ -124,9 +107,53 @@ void removeOdd(int A[], int& size)
 
 }
 
+void splitParity(int A[], int size) 
+{ 
+    int temp = size;
+    removeOdd(A, size);
+    size = temp; 
+}
+
+void insertionSort(int arr[], int size)
+{
+    for (int i = 0; i < size - 1; i++)
+            for (int j = i + 1; j >= 1 && arr[j] > arr [j - 1]; j--) 
+                swap(&arr[j], &arr[j - 1]);
+}
+
+void exercise8()
+{
+    #define ex8len 20
+
+    int arr[ex8len] = {0};
+    
+    for (int i = 0; i < ex8len; i++) scanf("%d", &arr[i]);
+
+    insertionSort(arr, ex8len);
+
+    printarr(arr, ex8len);
+}
+
+int findChange(int arr[], int n)
+{
+    int ind = -1;
+    for (int i = 1; i < n; i++)
+    {
+        if (arr[i - 1] % 2 == 0 && arr[i] % 2 == 1)
+        {
+            ind = i - 1;
+            break;
+        }
+    }
+
+    return ind; 
+}
+
 int main()
 {
-    int arr1[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, arr2[] = { 0, 0 }, n = 10;
+    int arr1[] = {1, 3, 5, 7, 9},
+        arr2[] = {0, 2, 4, 6, 8, 10},
+        n = 5, m = 6;
     /*
     exercise2();
     exercise3();
@@ -134,8 +161,17 @@ int main()
     exercise4b(arr1, 3);
     copyOdd(arr1, 3, arr2, n);
     printarr(arr2, n);
+    splitParity(arr1, n);
+    printarr(arr1, n);
+    exercise8();
+    printf("%d \n", findChange(arr2, m));
+    printarr(exercise1(arr1, n, arr2, m), n+m);
+    printarr(exercise22(arr1, n, arr2, m), n);
     */
-    removeOdd(arr1, n);
+
+    printarr(exercise32(arr1, n, arr2, m), n+m);
+
+    exercise42a(arr1, n, 4);
     printarr(arr1, n);
 
     return 0;
