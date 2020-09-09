@@ -65,8 +65,7 @@ int* exercise32(int arr1[], int size1, int arr2[], int size2)
         arr[count++] = arr1[i];
     }
 
-    if (inserted <= size2 - 1) 
-        for (int i = inserted; i < size2; i++) 
+    for (int i = inserted; i < size2; i++) 
             arr[count++] = arr2[i];
 
     return arr;

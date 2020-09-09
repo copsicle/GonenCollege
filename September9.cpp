@@ -68,24 +68,83 @@ void exercise8(int mat[][COL])
 
 void exercise9(int mat[][COL])
 {
+    for (int i = 0; i < ROW - 1; i++)
+        for (int j = 0; j < COL; j++)
+            if (j > i) mat[i][j] = mat[j][i];
+}
+
+void exercise10(int mat[][COL])
+{
+    int sum1 = 0, sum2 = 0, sum3, sum4, last1 = 0, last2 = 0;
     
+    for (int i = 0; i < ROW; i++)
+    {
+        sum3 = 0;
+        sum4 = 0;
+
+        for (int j = 0; j < COL; j++)
+        {
+            sum3 += mat[i][j];
+            sum4 += mat[j][i];
+        }
+
+        if ((last1 != sum3 || last2 != sum4) && i != 0) break;
+
+        last1 = sum3;
+        last2 = sum4;
+
+        sum1 += mat[i][i];
+        sum2 += mat[i][COL - i - 1];
+    }
+
+    printf(
+        (sum1 == sum2 && sum2 == sum3 && sum3 == sum4 && sum3 == last1 && sum4 == last2) ?
+         "Matrix is a magic square \n" : "Matrix is not a magic square \n");
+
+}
+
+void exercise18(int mat[][COL])
+{
+    for (int i = 0; i < ROW; i++)
+    {
+        mat[i][0] = 1;
+
+        for (int j = i; j > 0; j--)
+            mat[i][j] = mat[i - 1][j] + mat[i - 1][j - 1];
+    }
+}
+
+void exercise19(int mat[][COL])
+{
+    int i, j;
+
+    for (i = 0; i < ROW; i++)
+        for (j = 0; j < COL; j++)
+            if (mat[i][j] != mat[j][i]) break;
+    
+    printf((i == ROW && j == COL) ? 
+        "Matrix is symmetric \n": "Matrix is not symmetric \n");
 }
 
 int main()
 {
     int mat[ROW][COL] = {
-                        {0, -1, -1, -1, 0},
-                        {-1, 0, -1, 0, -1},
-                        {-1, -1, 0, -1, -1},
-                        {-1, 0, -1, 0, -1},
-                        {0, -1, -1, -1, 0}
+                        {1, 2, 3, 4, 5},
+                        {2, 2, 3, 4, 5},
+                        {3, 3, 3, 4, 5},
+                        {4, 4, 4, 4, 5},
+                        {5, 5, 5, 5, 5}
                         };
     /*
     exercise6(mat);
     exercise7(mat);
-    */
-
     exercise8(mat);
+    exercise9(mat);
+    exercise10(mat);
+    exercise18(mat);
+    exercise19(mat);
+    printmat(mat);
+    */
 
     return 0;
 }
