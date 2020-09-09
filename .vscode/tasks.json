@@ -7,7 +7,6 @@
             "args": [
                 "-g",
                 "${file}",
-                "header.cpp",
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}"
             ],
