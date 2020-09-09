@@ -84,3 +84,20 @@ void exercise42a(int arr[], int size, int num)
         }
     }
 }
+
+int* exercise42b(int arr[], int size)
+{
+    static int ans[50] = {};
+
+    for (int i = 0; i < size; i++) exercise42a(ans, size, arr[i]);
+
+    return ans;
+}
+
+void exercise52(int arr[], int size)
+{
+    for (int i = size; i > 0; i--)
+        for (int j = 1; j < i; j++)
+            if (arr[j - 1] > arr[j])
+                swap(&arr[j - 1], &arr[j]);
+}

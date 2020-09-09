@@ -149,29 +149,39 @@ int findChange(int arr[], int n)
     return ind; 
 }
 
+int exercise10(int arr[], int n)
+{
+    int i;
+
+    for (i = 0; i < n && arr[i + 1] > arr[i]; i++);
+
+    return arr[i];
+}
+
 int main()
 {
-    int arr1[] = {1, 3, 5, 7, 9},
+    int arr1[] = {9, 1, 7, 5, 3},
         arr2[] = {0, 2, 4, 6, 8, 10},
         n = 5, m = 6;
-    /*
+    
+    int out = 0;
+
     exercise2();
     exercise3();
-    exercise4a(arr1, 3);
-    exercise4b(arr1, 3);
-    copyOdd(arr1, 3, arr2, n);
+    exercise4a(arr1, n);
+    exercise4b(arr1, n, &out);
+    copyOdd(arr1, n, arr2, m);
     printarr(arr2, n);
     splitParity(arr1, n);
     printarr(arr1, n);
     exercise8();
     printf("%d \n", findChange(arr2, m));
+    printf("%d \n", exercise10(arr1, n));    
     printarr(exercise1(arr1, n, arr2, m), n+m);
     printarr(exercise22(arr1, n, arr2, m), n);
-    */
-
     printarr(exercise32(arr1, n, arr2, m), n+m);
-
-    exercise42a(arr1, n, 4);
+    printarr(exercise42b(arr1, n), n);
+    exercise52(arr1, n);
     printarr(arr1, n);
 
     return 0;
