@@ -25,7 +25,7 @@ typedef struct Trof
 
 int TestTrons(Trof* sTrof, Direction sDrc,
                 int* nTronAmount, int mMat[][MAPCOL + WALLSIZE * 2]);
-int TrofCheckCell(int mMat[][MAPCOL + WALLSIZE * 2],
+int TrofCheckCells(int mMat[][MAPCOL + WALLSIZE * 2],
                  Trof* sTrof, int* nTronAmount, Direction sDrc);
 void GetTrof(Trof* sTrof);
 void TrofLoop(Trof sTrof, int mMat[][MAPCOL + WALLSIZE * 2], int nTronAmount);
@@ -65,7 +65,6 @@ int main()
     return 0;
 }
 
-
 //-----------------------------------------------------------------------------
 // TestTrons
 // ---------
@@ -90,7 +89,8 @@ int TestTrons(Trof* sTrof, Direction sDrc,
 
     int nYOffset = sTrof->nIT + sDrc.nLine;
     int nXOffset = sTrof->nJT + sDrc.nCol;
-            
+    
+    // Check if cell is inside the wall
     if (nXOffset >= WALLSIZE && nXOffset <= MAPROW + WALLSIZE - 1 &&
         nYOffset >= WALLSIZE && nYOffset <= MAPCOL + WALLSIZE - 1)        
         {
@@ -111,7 +111,7 @@ int TestTrons(Trof* sTrof, Direction sDrc,
                 mMat[nXOffset][nYOffset] = 0;
                 *nTronAmount -= nTrons;
             }
-
+    
             sTrof->nIT = nYOffset;
             sTrof->nJT = nXOffset;
         }
@@ -124,7 +124,7 @@ int TestTrons(Trof* sTrof, Direction sDrc,
 }
 
 //-----------------------------------------------------------------------------
-// TrofCheckCell
+// TrofCheckCells
 // ---------
 //
 // General : Checks if TROFs path has TRONs and outputs relevant results
@@ -140,9 +140,10 @@ int TestTrons(Trof* sTrof, Direction sDrc,
 //
 //-----------------------------------------------------------------------------
 
-int TrofCheckCell(int mMat[][MAPCOL + WALLSIZE * 2],
+int TrofCheckCells(int mMat[][MAPCOL + WALLSIZE * 2],
                  Trof* sTrof, int* nTronAmount, Direction sDrc)
 {
+    // Check if this is the first arrival of TROF or taking steps
     if (sTrof->nSx)
     {
         for (int i = 1; i <= sTrof->nSx; i++)
@@ -199,7 +200,8 @@ void TrofLoop(Trof sTrof, int mMat[][MAPCOL + WALLSIZE * 2], int nTronAmount)
 
     do
     {
-        if(!TrofCheckCell(mMat, &sTrof, &nTronAmount, sTrof.sDx[nDirection])) 
+        // Check if TROF is still alive after taking steps or arriving
+        if(!TrofCheckCells(mMat, &sTrof, &nTronAmount, sTrof.sDx[nDirection])) 
             return;
 
         printf("\nInsert number of steps to take: ");
@@ -260,6 +262,8 @@ void TickInt(int* nNum, int* bRising)
 {
     switch (*nNum)
     {
+        // If rising rise until 1 and start to fall again
+        // Like a clockwise motion in a matrix
         case 0:
             if (*bRising) *nNum = 1;
             else *nNum = -1;
