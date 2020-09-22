@@ -58,7 +58,7 @@ int main()
 
     Trof sTrof;
 
-    SetDirections(&sTrof);
+    SetDirections(&sTrof, -1, 0, 0, 1);
     GetTrons(mMap, &nTronAmount);
     TrofLoop(sTrof, mMap, nTronAmount);
 
@@ -293,14 +293,15 @@ void TickInt(int* nNum, int* bRising)
 //
 // Parameters :
 // sTrof - TROF structure (I\O)
+// nX - Initial X value for pattern (In)
+// nY - Initial Y value for pattern (In)
+// nModX - Initial X Modifier for pattern (In)
+// nModY - Initial Y Modifier for pattern (In)
 //
 //-----------------------------------------------------------------------------
 
-void SetDirections(Trof* sTrof)
+void SetDirections(Trof* sTrof, int nX, int nY, int nModX, int nModY)
 {
-    
-    int nX = -1, nY = 0, nModX = 0, nModY = 1;
-
     sTrof->sDx[0].nLine = 0;
     sTrof->sDx[0].nCol = 0;
 
