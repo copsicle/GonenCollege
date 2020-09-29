@@ -12,80 +12,128 @@ typedef enum {FAILURE, SUCCESS, INVALID_INPUT,
 
 typedef enum {FALSE, TRUE} boolean;
 
-typedef struct playerType
+typedef struct Player
 {
     long plyrID;
-    
-    int age;
-    
     char firstName[15];
     char lastName[20];
+    int age;
+};
 
+typedef struct PlayerNode
+{
+    Player PL;
     struct teamType *tmptr;
-    struct playerType *next;    
-}
-playerRec, *playerPtr;
+    struct PlayerNode *next;
+};
 
-typedef struct teamType
+typedef struct Team
 {
     char teamName[20];
-
     int num;
+    Player **players;
+    struct Team *next;
+};
 
-    playerPtr *plarray;
-
-    struct teamType *next;
-}
-teamRec, *teamPtr;
-
-playerPtr players;
-
-teamPtr teams;
-
-playerPtr findPlayer(long playerID)
+typedef struct headType
 {
-    playerPtr p = players;
+    struct Team *teamList;
+    struct PlayerNode *playerList;
+}
+headder, *headPtr;
+
+PlayerNode* findPlayer(long playerID, headPtr head)
+{
+    PlayerNode *p = head->playerList;
 
     while (p)
     {
-        if (p->plyrID == playerID) return p;
+        if (p->PL.plyrID == playerID) return p;
         p = p->next;
     }
 
     return NULL;
 }
 
-teamPtr findTeam(char teamName[])
+Team* findTeam(char name[], headPtr head)
 {
-    teamPtr t = teams;
+    Team *t = head->teamList;
 
     while (t)
     {
-        if (!strcmp(t->teamName, teamName)) return t;
+        if (!strcmp(t->teamName, name)) return t;
         t = t->next;
     }
 
     return NULL;
 }
 
-statusType insertPlayer(long playerID, char lastName[], char firstName[], int age)
+statusType insertPlayer(
+    long playerID,char lastName[], char firstName[], int age, headPtr head
+    )
 {
     statusType status = SUCCESS;
-    playerPtr p, q;
-    q = findPlayer(playerID);
+    PlayerNode *p, *q;
+    q = findPlayer(playerID, head);
     if (q)
     {
         status = DUPLICATE_RECORD;
         return status;
     }
-    p = (playerPtr) malloc(sizeof(playerRec));
-    p -> plyrID = playerID;
-    strcpy(p->firstName, firstName);
-    strcpy(p->lastName, lastName);
-    p -> age = age;
-    p -> tmptr = NULL;
-    p -> next = players;
-    players = p;
+    p = (PlayerNode*) malloc(sizeof(PlayerNode));
+    p->PL.plyrID = playerID;
+    strcpy(p->PL.firstName, firstName);
+    strcpy(p->PL.lastName, lastName);
+    p->PL.age = age;
+    p->tmptr = NULL;
+    p -> next = head->playerList;
+    head->playerList = p;
+    return status;
+}
+
+statusType insertTeam(char name[])
+{
+    statusType status = SUCCESS;
+    teamPtr t = findTeam(name);
+    if (t)
+    {
+        status = DUPLICATE_RECORD;
+        return status;
+    }
+    t = (teamPtr) malloc(sizeof(teamRec));
+    strcpy(t->teamName, name);
+    t->num = 0;
+    t->plarray = NULL;
+    t->next = teams;
+    teams = t;
+    return status;
+}
+
+statusType deletePlayerFromTeam(long playerID)
+{
+    playerPtr p;
+    teamPtr t;
+    int i, k;
+    statusType status = SUCCESS;
+    p = findPlayer(playerID);
+    if ((p == NULL) || (p->tmptr==NULL)) status = MISSING_RECORD;
+    else
+    {
+        t = p->tmptr;
+        p->tmptr = NULL;
+        for (i = 0; i < t -> num; i++)
+        {
+            if (t->plarray[i]->plyrID == playerID)
+            {
+                k = i;
+                break;
+            }
+        }
+        for (i = k + 1; i < t -> num; i++)
+            t -> plarray[i-1] = t->plarray[i];
+        t->num = t->num - 1;
+        t->plarray = (playerPtr*) realloc(t->plarray, (t->num) * sizeof(playerPtr));
+    }
     return status;
 }
 
@@ -117,34 +165,6 @@ statusType deletePlayer(long playerID)
                 q = q->next;
             }
         }
-    }
-    return status;
-}
-
-statusType deletePlayerFromTeam(long playerID)
-{
-    playerPtr p;
-    teamPtr t;
-    int i, k;
-    statusType status = SUCCESS;
-    p = findPlayer(playerID);
-    if ((p == NULL) || (p->tmptr==NULL)) status = MISSING_RECORD;
-    else
-    {
-        t = p->tmptr;
-        p->tmptr = NULL;
-        for (i = 0; i < t -> num; i++)
-        {
-            if (t->plarray[i]->plyrID == playerID)
-            {
-                k = i;
-                break;
-            }
-        }
-        for (i = k + 1; i < t -> num; i++)
-            t -> plarray[i-1] = t->plarray[i];
-        t->num = t->num - 1;
-        t->plarray = (playerPtr*) realloc(t->plarray, (t->num) * sizeof(playerPtr));
     }
     return status;
 }
@@ -207,8 +227,32 @@ statusType joinPlayerToTeam(long playerID, char team[])
     return status;
 }
 
+void createFile()
+{
+    FILE* pFile = fopen(FILE1, "w+b");
+    
+    teamRec t;
+
+    char name[20];
+    int size = 1;
+
+    printf("Enter name for team 1: ");
+    flushall();
+    gets(name);
+
+    t.num = 0;
+
+    while(strcmp("",name))
+    {
+        strcpy(t.teamName, name);
+    }
+
+}
+
 int main()
 {
+
+    createFile();
 
     return 0;
 }
