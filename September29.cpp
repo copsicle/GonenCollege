@@ -77,14 +77,14 @@ void writeText(char name[])
         char str[MAXSTRING];
         printf(">>> ");
         fflush(stdin);
-        gets(str);
+        gets_s(str);
         while(strcmp(str, ""))
         {
             fputs(str, pF);
             fputc('\n', pF);
             printf(">>> ");
             fflush(stdin);
-            gets(str);
+            gets_s(str);
         }
 
         fclose(pF);
@@ -94,13 +94,12 @@ void writeText(char name[])
 int main()
 {
     writeText(FILE1);
-
     removeSpaces(FILE2, FILE1);
-
     printf("%d\n", countWords(FILE2));
-
     remove(FILE1);
     remove(FILE2);
+
+    
 
     return 0;
 }
