@@ -226,6 +226,57 @@ statusType joinPlayerToTeam(long playerID, char team[])
     return SUCCESS;
 }
 
+statusType printPlayers()
+{
+    PlayerNode *p = head.playerList;
+
+    if (!p) printf("No Players\n");
+    else while (p)
+    {
+        printf("Name: %s %s\tID: %l\tAge: %d\n",
+            p->PL.firstName, p->PL.lastName, p->PL.plyrID, p->PL.age);
+        p = p->next;
+    }
+    
+    return SUCCESS;
+}
+
+statusType printTeams()
+{
+    Team *t = head.teamList;
+
+    if (!t) printf("No Teams\n");
+    else while (t)
+    {
+        printf("Name: %s\n", t->teamName);
+        t = t->next;
+    }
+
+    return SUCCESS;
+}
+
+statusType printTeamInfo(char teamName[])
+{
+    Team *t = findTeam(teamName);
+
+    if (!t) return MISSING_RECORD;
+    else
+    {
+        for (int i = 0; i < t->num; i++)
+        {
+            if (t->num)
+            {
+                printf("Name: %s %s\tID: %l\tAge: %d\n",
+                    t->players[i]->firstName, t->players[i]->lastName,
+                    t->players[i]->plyrID, t->players[i]->age);
+            }
+            else printf("0\n");
+        }
+    }
+    
+    return SUCCESS;
+}
+
 statusType freeHead()
 {
     Team* t = head.teamList;
