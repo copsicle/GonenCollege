@@ -6,30 +6,31 @@
 #include <time.h>
 
 #define FILE1 "PROJECT1.DAT"
+#define MAXSTR 50
 
 typedef enum {FAILURE, SUCCESS, INVALID_INPUT,
-            DUPLICATE_RECORD, MISSING_RECORD} statusType;
+            DUPLICATE_RECORD, MISSING_RECORD, FILE_ERROR} statusType;
 
 typedef enum {FALSE, TRUE} boolean;
 
 typedef struct Player
 {
     long plyrID;
-    char firstName[15];
-    char lastName[20];
+    char firstName[MAXSTR];
+    char lastName[MAXSTR];
     int age;
 };
 
 typedef struct PlayerNode
 {
     Player PL;
-    struct teamType *tmptr;
+    struct Team *tmptr;
     struct PlayerNode *next;
 };
 
 typedef struct Team
 {
-    char teamName[20];
+    char teamName[MAXSTR];
     int num;
     Player **players;
     struct Team *next;
@@ -42,9 +43,11 @@ typedef struct headType
 }
 headder, *headPtr;
 
-PlayerNode* findPlayer(long playerID, headPtr head)
+headder head;
+
+PlayerNode* findPlayer(long playerID)
 {
-    PlayerNode *p = head->playerList;
+    PlayerNode *p = head.playerList;
 
     while (p)
     {
@@ -55,9 +58,9 @@ PlayerNode* findPlayer(long playerID, headPtr head)
     return NULL;
 }
 
-Team* findTeam(char name[], headPtr head)
+Team* findTeam(char name[])
 {
-    Team *t = head->teamList;
+    Team *t = head.teamList;
 
     while (t)
     {
@@ -68,95 +71,94 @@ Team* findTeam(char name[], headPtr head)
     return NULL;
 }
 
-statusType insertPlayer(
-    long playerID,char lastName[], char firstName[], int age, headPtr head
-    )
+statusType insertPlayer(long playerID, char lastName[], char firstName[], int age)
 {
-    statusType status = SUCCESS;
     PlayerNode *p, *q;
-    q = findPlayer(playerID, head);
-    if (q)
-    {
-        status = DUPLICATE_RECORD;
-        return status;
-    }
+    q = findPlayer(playerID);
+    if (q) return DUPLICATE_RECORD;
     p = (PlayerNode*) malloc(sizeof(PlayerNode));
+    if (!p) return FAILURE;
     p->PL.plyrID = playerID;
     strcpy(p->PL.firstName, firstName);
     strcpy(p->PL.lastName, lastName);
     p->PL.age = age;
     p->tmptr = NULL;
-    p -> next = head->playerList;
-    head->playerList = p;
-    return status;
+    p -> next = head.playerList;
+    head.playerList = p;
+    return SUCCESS;
 }
 
 statusType insertTeam(char name[])
 {
-    statusType status = SUCCESS;
-    teamPtr t = findTeam(name);
-    if (t)
-    {
-        status = DUPLICATE_RECORD;
-        return status;
-    }
-    t = (teamPtr) malloc(sizeof(teamRec));
+    Team* t = findTeam(name);
+    if (t) return DUPLICATE_RECORD;
+    t = (Team*) malloc(sizeof(Team));
+    if (!t) return FAILURE;
     strcpy(t->teamName, name);
     t->num = 0;
-    t->plarray = NULL;
-    t->next = teams;
-    teams = t;
-    return status;
+    t->players = NULL;
+    t->next = head.teamList;
+    head.teamList = t;
+    return SUCCESS;
 }
 
 statusType deletePlayerFromTeam(long playerID)
 {
-    playerPtr p;
-    teamPtr t;
+    PlayerNode* p;
+    Team* t;
     int i, k;
-    statusType status = SUCCESS;
     p = findPlayer(playerID);
-    if ((p == NULL) || (p->tmptr==NULL)) status = MISSING_RECORD;
+    if ((p == NULL) || (p->tmptr==NULL)) return MISSING_RECORD;
     else
     {
-        t = p->tmptr;
+        t = (Team*) p->tmptr;
         p->tmptr = NULL;
         for (i = 0; i < t -> num; i++)
         {
-            if (t->plarray[i]->plyrID == playerID)
+            if (t->players[i]->plyrID == playerID)
             {
                 k = i;
                 break;
             }
         }
         for (i = k + 1; i < t -> num; i++)
-            t -> plarray[i-1] = t->plarray[i];
+            t -> players[i-1] = t->players[i];
         t->num = t->num - 1;
-        t->plarray = (playerPtr*) realloc(t->plarray, (t->num) * sizeof(playerPtr));
+        if (t->num)
+        {
+            t->players = (Player**) realloc(t->players, (t->num) * sizeof(Player*));
+            if(!t->players) return FAILURE;
+        }
+        else
+        {
+            free(t->players);
+            t->players = NULL;
+        }
+        
     }
-    return status;
+    return SUCCESS;
 }
 
 statusType deletePlayer(long playerID)
 {
-    playerPtr p, q;
+    PlayerNode *p, *q;
     statusType status = SUCCESS;
     p = findPlayer(playerID);
     if (p == NULL) status = MISSING_RECORD;
     else
     {
         if (p->tmptr) status = deletePlayerFromTeam(playerID);
-        q = players;
-        if (players == p)
+        q = head.playerList;
+        if (q->PL.plyrID == playerID)
         {
-            players = q->next;
+            head.playerList = q->next;
             free(p);
         }
         else
         {
             while (q->next)
             {
-                if (q->next == p)
+                if (q->next->PL.plyrID == p->PL.plyrID)
                 {
                     q->next = p->next;
                     free(p);
@@ -171,88 +173,177 @@ statusType deletePlayer(long playerID)
 
 statusType deleteTeam(char teamName[])
 {
-    statusType status = SUCCESS;
     int i;
-    teamPtr t, s;
+    PlayerNode* p;
+    Team *t, *s;
     t = findTeam(teamName);
-    if (t == NULL) status = MISSING_RECORD;
+    if (t == NULL) return MISSING_RECORD;
     else
     {
-        if (t->plarray)
+        if (t->players)
             for(i = 0; i < t->num; i++)
-                t->plarray[i]->tmptr = NULL;
-        if (t == teams)
-            teams = t->next;
+                deletePlayerFromTeam(t->players[i]->plyrID);
+        if (t == head.teamList)
+            head.teamList = t->next;
         else
         {
-            s = teams;
+            s = head.teamList;
             while (s->next != t)
                 s = s->next;
             s->next = t->next;
         }
         free(t);
     }
-    return status;
+    return SUCCESS;
 }
 
 statusType joinPlayerToTeam(long playerID, char team[])
 {
-    statusType status = SUCCESS;
-    playerPtr p;
-    teamPtr t;
+    PlayerNode* p;
+    Team* t;
     p = findPlayer(playerID);
     t = findTeam(team);
-    if ((p == NULL) || (t == NULL)) status = MISSING_RECORD;
+    if (((p == NULL) || (t == NULL)) || (p->tmptr)) return MISSING_RECORD;
     else
     {
-        if (p->tmptr) status = MISSING_RECORD;
+        p->tmptr = t;
+        if (!t->num)
+        {
+            t->players = (Player**) malloc(sizeof(Player*));
+            if (!t->players) return FAILURE;
+            t->players[0] = &p->PL;
+            t->num = 1;
+        }
         else
         {
-            p->tmptr = t;
-            if (t->num == 0)
-            {
-                t->plarray = (playerPtr*) realloc(NULL, sizeof(playerPtr));
-                t->plarray[0] = p;
-                t->num = 1;
-            }
-            else
-            {
-                t -> plarray = (playerPtr*) realloc
-                    (t->plarray,(t->num + 1) * sizeof(playerPtr));
-                t->plarray[t->num] = p;
-                t -> num = t->num + 1;
-            }
-        }   
+            t -> players = (Player**) realloc
+                (t->players,(t->num + 1) * sizeof(Player*));
+            if (!t->players) return FAILURE;
+            t->players[t->num] = &p->PL;
+            t -> num = t->num + 1;
+        }
     }
-    return status;
+    return SUCCESS;
 }
 
-void createFile()
+statusType freeHead()
 {
-    FILE* pFile = fopen(FILE1, "w+b");
-    
-    teamRec t;
+    Team* t = head.teamList;
+    PlayerNode* p = head.playerList;
 
-    char name[20];
-    int size = 1;
-
-    printf("Enter name for team 1: ");
-    flushall();
-    gets(name);
-
-    t.num = 0;
-
-    while(strcmp("",name))
+    while (p)
     {
-        strcpy(t.teamName, name);
+        if (deletePlayer(p->PL.plyrID) != SUCCESS) return FAILURE;
+        p = head.playerList;
     }
 
+    while (t)
+    {
+        if (deleteTeam(t->teamName) != SUCCESS) return FAILURE;
+        t = head.teamList;
+    }
+
+    return SUCCESS;
+}
+
+statusType writeToFile()
+{
+    FILE *pFile = fopen(FILE1, "w+b");
+    if (!pFile) return FILE_ERROR;
+    Team *t = head.teamList;
+    PlayerNode *p = head.playerList;
+    Player **pptr;
+    int size = 0;
+    
+    fwrite(&size, sizeof(int), 1, pFile);
+    
+    while (p)
+    {
+        size++;
+        fwrite(p, sizeof(PlayerNode), 1, pFile);
+        p = p->next;
+    }
+
+    long pos = ftell(pFile);
+    rewind(pFile);
+    fwrite(&size, sizeof(int), 1, pFile);
+    fseek(pFile, pos, SEEK_SET);
+
+    size = 0;
+
+    fwrite(&size, sizeof(int), 1, pFile);
+
+    while (t)
+    {
+        size++;
+        t->players = pptr;
+        t->players = NULL;
+        fwrite(t, sizeof(Team), 1, pFile);
+        fwrite(&t, sizeof(Team*), 1, pFile);
+        t->players = pptr;
+        t = t->next;
+    }
+
+    fseek(pFile, pos, SEEK_SET);
+    fwrite(&size, sizeof(int), 1, pFile);
+
+    fclose(pFile);
+
+    return SUCCESS;
+}
+
+statusType readFromFile()
+{
+    FILE* pFile = fopen(FILE1, "rb");
+
+    if (!pFile) return FILE_ERROR;
+
+    int size;
+    PlayerNode *p;
+
+    fread(&size, sizeof(int), 1, pFile);
+    while (size-- > 0 && !feof(pFile))
+    {
+        p = (PlayerNode*) malloc(sizeof(PlayerNode));
+        if (!p) return FAILURE;
+        fread(p, sizeof(PlayerNode), 1, pFile);
+        p->next = head.playerList;
+        head.playerList = p;
+    }
+    
+    Team *t, *s;
+    statusType stat;
+
+    fread(&size, sizeof(int), 1, pFile);
+    while(size-- > 0 && !feof(pFile))
+    {
+        t = (Team*) malloc(sizeof(Team));
+        if (!t) return FAILURE;
+        fread(t, sizeof(Team), 1, pFile);
+        fread(&s, sizeof(Team*), 1, pFile);
+        t->next = head.teamList;
+        head.teamList = t;
+        p = head.playerList;
+        while (p)
+        {
+            if(p->tmptr == s)
+            {
+                p->tmptr = NULL;
+                stat = joinPlayerToTeam(p->PL.plyrID, t->teamName);
+                if (stat != SUCCESS) return stat;
+            }
+            p = p->next;
+        }
+    }
+
+    fclose(pFile);
+
+    return SUCCESS;
 }
 
 int main()
 {
 
-    createFile();
 
     return 0;
 }
