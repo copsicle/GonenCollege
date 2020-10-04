@@ -8,8 +8,8 @@
 #define FILE1 "PROJECT1.DAT"
 #define MAXSTR 50
 
-typedef enum {FAILURE, SUCCESS, INVALID_INPUT,
-            DUPLICATE_RECORD, MISSING_RECORD, FILE_ERROR} statusType;
+typedef enum {FAILURE, SUCCESS, INVALID_INPUT, FILE_ERROR,
+            DUPLICATE_RECORD, MISSING_RECORD, EXIT} statusType;
 
 typedef enum {FALSE, TRUE} boolean;
 
@@ -71,7 +71,7 @@ Team* findTeam(char name[])
     return NULL;
 }
 
-statusType insertPlayer(long playerID, char lastName[], char firstName[], int age)
+statusType insertPlayer(long playerID, char firstName[], char lastName[], int age)
 {
     PlayerNode *p, *q;
     q = findPlayer(playerID);
@@ -171,12 +171,12 @@ statusType deletePlayer(long playerID)
     return status;
 }
 
-statusType deleteTeam(char teamName[])
+statusType deleteTeam(char name[])
 {
     int i;
     PlayerNode* p;
     Team *t, *s;
-    t = findTeam(teamName);
+    t = findTeam(name);
     if (t == NULL) return MISSING_RECORD;
     else
     {
@@ -233,7 +233,7 @@ statusType printPlayers()
     if (!p) printf("No Players\n");
     else while (p)
     {
-        printf("Name: %s %s\tID: %l\tAge: %d\n",
+        printf("Name: %s %s\tID: %ld\tAge: %d\n",
             p->PL.firstName, p->PL.lastName, p->PL.plyrID, p->PL.age);
         p = p->next;
     }
@@ -248,16 +248,16 @@ statusType printTeams()
     if (!t) printf("No Teams\n");
     else while (t)
     {
-        printf("Name: %s\n", t->teamName);
+        printf("Team: %s\n", t->teamName);
         t = t->next;
     }
 
     return SUCCESS;
 }
 
-statusType printTeamInfo(char teamName[])
+statusType printTeamInfo(char name[])
 {
-    Team *t = findTeam(teamName);
+    Team *t = findTeam(name);
 
     if (!t) return MISSING_RECORD;
     else
@@ -266,7 +266,7 @@ statusType printTeamInfo(char teamName[])
         {
             if (t->num)
             {
-                printf("Name: %s %s\tID: %l\tAge: %d\n",
+                printf("Name: %s %s\tID: %ld\tAge: %d\n",
                     t->players[i]->firstName, t->players[i]->lastName,
                     t->players[i]->plyrID, t->players[i]->age);
             }
@@ -277,24 +277,95 @@ statusType printTeamInfo(char teamName[])
     return SUCCESS;
 }
 
-statusType freeHead()
+int playerCmp(const void* a, const void* b)
 {
-    Team* t = head.teamList;
-    PlayerNode* p = head.playerList;
+    return strcmp((*(Player**)a)->lastName, (*(Player**)b)->lastName);
+}
 
-    while (p)
-    {
-        if (deletePlayer(p->PL.plyrID) != SUCCESS) return FAILURE;
-        p = head.playerList;
-    }
+statusType playerSort(char name[])
+{
+    Team* t = findTeam(name);
+    if (!t || !t->players) return MISSING_RECORD;
 
-    while (t)
+    qsort(t->players, t->num, sizeof(Player*), &playerCmp);
+
+    return printTeamInfo(name);
+}
+
+statusType teamNameSort()
+{
+    int count = 0;
+    for (Team* s = head.teamList; s; s = s->next) count++;
+    if (!count) return MISSING_RECORD;
+    Team *t, *s;
+    
+    for (int i = 1; i < count; i++)
     {
-        if (deleteTeam(t->teamName) != SUCCESS) return FAILURE;
         t = head.teamList;
+        for (int j = 1; j < count - i && t; j++)
+        {
+            s = t->next;
+            if (strcmp(t->teamName, s->teamName) > 0)
+            {
+                t->next = s->next;
+                s->next = head.teamList;
+                head.teamList = s;
+            }
+            t = t->next;
+        }
     }
-
     return SUCCESS;
+}
+
+statusType teamSizeSort()
+{
+    int count = 0;
+    for (Team* s = head.teamList; s; s = s->next) count++;
+    if (!count) return MISSING_RECORD;
+    Team *t, *s;
+    
+    for (int i = 1; i < count; i++)
+    {
+        t = head.teamList;
+        for (int j = 1; j < count - i && t; j++)
+        {
+            s = t->next;
+            if (t->num > s->num)
+            {
+                t->next = s->next;
+                s->next = head.teamList;
+                head.teamList = s;
+            }
+            t = t->next;
+        }
+    }
+    return SUCCESS;
+}
+
+statusType isPlayerAvail(long playerID)
+{
+    PlayerNode *p = findPlayer(playerID);
+    if (!p) return MISSING_RECORD;
+    else if (!p->tmptr) printf("Player available\n");
+    else printTeamInfo(p->tmptr->teamName);
+    return SUCCESS;
+}
+
+char* getTeamName()
+{
+    static char str[MAXSTR];
+    printf("Enter team name:\n");
+    fflush(stdin);
+    gets(str);
+    return str;
+}
+
+long getID()
+{
+    long ans;
+    printf("Insert ID:\n");
+    scanf("%ld", &ans);
+    return ans;
 }
 
 statusType writeToFile()
@@ -392,9 +463,180 @@ statusType readFromFile()
     return SUCCESS;
 }
 
+statusType exitProg()
+{
+    Team* t = head.teamList;
+    PlayerNode* p = head.playerList;
+    statusType s = EXIT;
+    
+    printf("Write changes to file? (1, 0)\n");
+    fflush(stdin);
+    if (getchar() == '1') s = writeToFile();
+    
+    while (p)
+    {
+        if (deletePlayer(p->PL.plyrID) == FAILURE) return FAILURE;
+        p = head.playerList;
+    }
+
+    while (t)
+    {
+        if (deleteTeam(t->teamName) == FAILURE) return FAILURE;
+        t = head.teamList;
+    }
+
+    return s;
+}
+
+statusType select(int selection)
+{
+    statusType s;
+    
+    switch(selection)
+    {
+        case 1:
+        {
+            long ID;
+            char str1[MAXSTR], str2[MAXSTR];
+            int age;
+            printf("Enter player info:\n");
+            scanf("%ld %s %s %d", &ID, str1, str2, &age);
+            s = insertPlayer(ID, str1, str2, age);
+
+            break;
+        }
+        case 2:
+        {
+            PlayerNode *p = findPlayer(getID());
+            if (!p) s = MISSING_RECORD;
+            else s = SUCCESS;
+
+            break;
+        }
+        case 3:
+            s = deletePlayer(getID());
+
+            break;
+        case 4:
+            s = insertTeam(getTeamName());
+
+            break;
+        case 5:
+        {
+            Team *t = findTeam(getTeamName());
+            if (!t) s = MISSING_RECORD;
+            else s = SUCCESS;
+
+            break;
+        }
+        case 6:
+            s = deleteTeam(getTeamName());
+
+            break;
+        case 7:
+            s = joinPlayerToTeam(getID(), getTeamName());
+
+            break;
+        case 8:
+            s = deletePlayerFromTeam(getID());
+
+            break;
+        case 9:
+            s = printPlayers();
+
+            break;
+        case 10:
+            s = printTeams();
+
+            break;
+        case 11:
+            s = printTeamInfo(getTeamName());
+
+            break;
+        case 12:
+            s = playerSort(getTeamName());
+
+            break;
+        case 13:
+            s = teamNameSort();
+
+            break;
+        case 14:
+            s = teamSizeSort();
+
+            break;
+        case 15:
+            s = isPlayerAvail(getID());
+
+            break;
+        case 16:
+            s = exitProg();
+
+            break;
+        default:
+            s = INVALID_INPUT;
+
+            break;
+    }
+    return s;
+}
+
+boolean handleStatus(statusType s)
+{
+    switch(s)
+    {
+        case FAILURE:
+            printf("Dynamic memory allocation error\n");
+            return TRUE;
+        case SUCCESS:
+            printf("Success\n");
+
+            break;
+        case INVALID_INPUT:
+            printf("Invalid input\n");
+
+            break;
+        case FILE_ERROR:
+            printf("Error opening file\n");
+
+            break;
+        case DUPLICATE_RECORD:
+            printf("Error\n");
+
+            break;
+        case MISSING_RECORD:
+            printf("Error\n");
+
+            break;
+        case EXIT:
+            printf("Bye\n");
+            return TRUE;
+        default:
+            break;
+    }
+
+    return FALSE;
+}
+// todo: fix team sorts and deleteplayerfromteam seg fault and printteam seg fault after readfile
 int main()
 {
+    head.teamList = NULL;
+    head.playerList = NULL;
 
+    boolean exit = FALSE;
+
+    printf("Would you like to read from file? (1, 0)\n");
+    fflush(stdin);
+    if(getchar() == '1') exit = handleStatus(readFromFile());
+
+    int selection = 0;
+
+    while (!exit)
+    {
+        printf("Enter selection: (1-16)\n");
+        scanf("%d", &selection);
+        exit = handleStatus(select(selection));
+    }
 
     return 0;
 }
