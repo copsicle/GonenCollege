@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 
 #define FILE1 "PROJECT1.DAT"
 #define STRMAX 50
@@ -279,45 +278,60 @@ statusType printTeamInfo(char *name)
     return SUCCESS;
 }
 
-int playerCmp(const void* a, const void* b)
-{
-    Player *pa = *(Player**)a;
-    Player *pb = *(Player**)a;
-
-    return strcmp(pb->lastName, pa->lastName);
-}
-
 statusType playerSort(char *name)
 {
-    Team* t = findTeam(name);
+    Player *temp;
+    Team *t = findTeam(name);
     if (!t || !t->players) return MISSING_RECORD;
-
-    qsort(t->players, t->num, sizeof(Player*), playerCmp);
-
+        
+    int ar_len = t->num;
+    for (int i = 0; i < ar_len - 1; i++)
+    {
+        for (int k = 0; k < ar_len - i - 1; k++)
+        {
+            if (strcmp(t->players[k]->lastName, t->players[k + 1]->lastName) > 0)
+            {
+                temp = t->players[k];
+                t->players[k] = t->players[k + 1];
+                t->players[k + 1] = temp;
+            }
+        }
+    }
     return printTeamInfo(name);
 }
 
 statusType teamNameSort()
 {
-    int count = 0;
-    for (Team* s = head.teamList; s; s = s->next) count++;
+    int i, j, swa = 1, count = 0;
+    for (Team *t = head.teamList; t; t = t->next) count++;
     if (!count) return MISSING_RECORD;
-    Team *t, *s;
-    
-    for (int i = 1; i < count; i++)
+    Team *temp, *x, *t;
+
+    for (i = 0; i <= count && swa; i++)
     {
         t = head.teamList;
-        s = t->next;
-        for (int j = 1; j <= count - i && t && s; j++)
+        swa = 0;
+        for (j = 0; j < count - i - 1; j++)
         {
-            s = t->next;
-            if (strcmp(t->teamName, s->teamName) > 0)
+            x = t->next;
+            if (strcmp(t->teamName, x->teamName) > 0)
             {
-                t->next = s->next;
-                s->next = head.teamList;
-                head.teamList = s;
+                if (t == head.teamList)
+                {
+                    temp = x->next;
+                    head.teamList = x;
+                    head.teamList->next = t;
+                    t->next = temp;
+                }
+                else
+                {
+                    temp = x->next;
+                    x->next = t;
+                    t->next = temp;
+                }
+                swa = 1;
             }
-            else t = t->next;
+            t = t->next;
         }
     }
     return SUCCESS;
@@ -325,22 +339,34 @@ statusType teamNameSort()
 
 statusType teamSizeSort()
 {
-    int count = 0;
-    for (Team* s = head.teamList; s; s = s->next) count++;
+    int i, j, swa = 1, count = 0;
+    for (Team *t = head.teamList; t; t = t->next) count++;
     if (!count) return MISSING_RECORD;
-    Team *t, *s;
-    
-    for (int i = 1; i < count; i++)
+    Team *temp, *x, *t;
+
+    for (i = 0; i <= count && swa; i++)
     {
         t = head.teamList;
-        for (int j = 1; j < count - i && t; j++)
+        swa = 0;
+        for (j = 0; j < count - i - 1; j++)
         {
-            s = t->next;
-            if (t->num > s->num)
+            x = t->next;
+            if (t->num > x->num)
             {
-                t->next = s->next;
-                s->next = head.teamList;
-                head.teamList = s;
+                if (t == head.teamList)
+                {
+                    temp = x->next;
+                    head.teamList = x;
+                    head.teamList->next = t;
+                    t->next = temp;
+                }
+                else
+                {
+                    temp = x->next;
+                    x->next = t;
+                    t->next = temp;
+                }
+                swa = 1;
             }
             t = t->next;
         }
@@ -507,7 +533,7 @@ boolean handleStatus(statusType s)
     switch(s)
     {
         case FAILURE:
-            printf("Dynamic memory allocation error\n");
+            printf("Allocation Error\n");
             return TRUE;
         case SUCCESS:
             printf("Success\n");
@@ -695,7 +721,6 @@ statusType select(int selection)
     return s;
 }
 
-// todo: fix team sorts
 int main()
 {
     head.teamList = NULL;
