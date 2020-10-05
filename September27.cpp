@@ -6,7 +6,7 @@
 #include <time.h>
 
 #define FILE1 "PROJECT1.DAT"
-#define MAXSTR 50
+#define STRMAX 50
 
 typedef enum {FAILURE, SUCCESS, INVALID_INPUT, FILE_ERROR,
             DUPLICATE_RECORD, MISSING_RECORD, EXIT} statusType;
@@ -15,9 +15,9 @@ typedef enum {FALSE, TRUE} boolean;
 
 typedef struct Player
 {
-    long plyrID;
-    char firstName[MAXSTR];
-    char lastName[MAXSTR];
+    char *plyrID;
+    char *firstName;
+    char *lastName;
     int age;
 };
 
@@ -30,7 +30,7 @@ typedef struct PlayerNode
 
 typedef struct Team
 {
-    char teamName[MAXSTR];
+    char *teamName;
     int num;
     Player **players;
     struct Team *next;
@@ -45,20 +45,20 @@ headder, *headPtr;
 
 headder head;
 
-PlayerNode* findPlayer(long playerID)
+PlayerNode* findPlayer(char *playerID)
 {
     PlayerNode *p = head.playerList;
 
     while (p)
     {
-        if (p->PL.plyrID == playerID) return p;
+        if (!strcmp(p->PL.plyrID, playerID)) return p;
         p = p->next;
     }
 
     return NULL;
 }
 
-Team* findTeam(char name[])
+Team* findTeam(char *name)
 {
     Team *t = head.teamList;
 
@@ -71,7 +71,7 @@ Team* findTeam(char name[])
     return NULL;
 }
 
-statusType insertPlayer(long playerID, char firstName[], char lastName[], int age)
+statusType insertPlayer(char *playerID, char *firstName, char *lastName, int age)
 {
     PlayerNode *p, *q;
     q = findPlayer(playerID);
@@ -79,8 +79,8 @@ statusType insertPlayer(long playerID, char firstName[], char lastName[], int ag
     p = (PlayerNode*) malloc(sizeof(PlayerNode));
     if (!p) return FAILURE;
     p->PL.plyrID = playerID;
-    strcpy(p->PL.firstName, firstName);
-    strcpy(p->PL.lastName, lastName);
+    p->PL.firstName = firstName;
+    p->PL.lastName = lastName;
     p->PL.age = age;
     p->tmptr = NULL;
     p -> next = head.playerList;
@@ -88,13 +88,13 @@ statusType insertPlayer(long playerID, char firstName[], char lastName[], int ag
     return SUCCESS;
 }
 
-statusType insertTeam(char name[])
+statusType insertTeam(char *name)
 {
     Team* t = findTeam(name);
     if (t) return DUPLICATE_RECORD;
     t = (Team*) malloc(sizeof(Team));
     if (!t) return FAILURE;
-    strcpy(t->teamName, name);
+    t->teamName = name;
     t->num = 0;
     t->players = NULL;
     t->next = head.teamList;
@@ -102,7 +102,7 @@ statusType insertTeam(char name[])
     return SUCCESS;
 }
 
-statusType deletePlayerFromTeam(long playerID)
+statusType deletePlayerFromTeam(char *playerID)
 {
     PlayerNode* p;
     Team* t;
@@ -115,7 +115,7 @@ statusType deletePlayerFromTeam(long playerID)
         p->tmptr = NULL;
         for (i = 0; i < t -> num; i++)
         {
-            if (t->players[i]->plyrID == playerID)
+            if (!strcmp(t->players[i]->plyrID, playerID))
             {
                 k = i;
                 break;
@@ -139,7 +139,7 @@ statusType deletePlayerFromTeam(long playerID)
     return SUCCESS;
 }
 
-statusType deletePlayer(long playerID)
+statusType deletePlayer(char *playerID)
 {
     PlayerNode *p, *q;
     statusType status = SUCCESS;
@@ -149,18 +149,24 @@ statusType deletePlayer(long playerID)
     {
         if (p->tmptr) status = deletePlayerFromTeam(playerID);
         q = head.playerList;
-        if (q->PL.plyrID == playerID)
+        if (!strcmp(q->PL.plyrID, playerID))
         {
             head.playerList = q->next;
+            free(p->PL.plyrID);
+            free(p->PL.firstName);
+            free(p->PL.lastName);
             free(p);
         }
         else
         {
             while (q->next)
             {
-                if (q->next->PL.plyrID == p->PL.plyrID)
+                if (!strcmp(q->next->PL.plyrID, p->PL.plyrID))
                 {
                     q->next = p->next;
+                    free(p->PL.plyrID);
+                    free(p->PL.firstName);
+                    free(p->PL.lastName);
                     free(p);
                     break;
                 }
@@ -171,7 +177,7 @@ statusType deletePlayer(long playerID)
     return status;
 }
 
-statusType deleteTeam(char name[])
+statusType deleteTeam(char *name)
 {
     int i;
     PlayerNode* p;
@@ -192,12 +198,13 @@ statusType deleteTeam(char name[])
                 s = s->next;
             s->next = t->next;
         }
+        free(t->teamName);
         free(t);
     }
     return SUCCESS;
 }
 
-statusType joinPlayerToTeam(long playerID, char team[])
+statusType joinPlayerToTeam(char *playerID, char *team)
 {
     PlayerNode* p;
     Team* t;
@@ -233,7 +240,7 @@ statusType printPlayers()
     if (!p) printf("No Players\n");
     else while (p)
     {
-        printf("Name: %s %s\tID: %ld\tAge: %d\n",
+        printf("Name: %s %s\t\tID: %s\tAge: %d\n",
             p->PL.firstName, p->PL.lastName, p->PL.plyrID, p->PL.age);
         p = p->next;
     }
@@ -255,39 +262,37 @@ statusType printTeams()
     return SUCCESS;
 }
 
-statusType printTeamInfo(char name[])
+statusType printTeamInfo(char *name)
 {
     Team *t = findTeam(name);
 
     if (!t) return MISSING_RECORD;
     else
     {
-        for (int i = 0; i < t->num; i++)
-        {
-            if (t->num)
-            {
-                printf("Name: %s %s\tID: %ld\tAge: %d\n",
+        if (t->num)
+            for (int i = 0; i < t->num; i++)
+                printf("Name: %s %s\t\tID: %s\tAge: %d\n",
                     t->players[i]->firstName, t->players[i]->lastName,
                     t->players[i]->plyrID, t->players[i]->age);
-            }
-            else printf("0\n");
-        }
+        else printf("0\n");
     }
-    
     return SUCCESS;
 }
 
 int playerCmp(const void* a, const void* b)
 {
-    return strcmp((*(Player**)a)->lastName, (*(Player**)b)->lastName);
+    Player *pa = *(Player**)a;
+    Player *pb = *(Player**)a;
+
+    return strcmp(pb->lastName, pa->lastName);
 }
 
-statusType playerSort(char name[])
+statusType playerSort(char *name)
 {
     Team* t = findTeam(name);
     if (!t || !t->players) return MISSING_RECORD;
 
-    qsort(t->players, t->num, sizeof(Player*), &playerCmp);
+    qsort(t->players, t->num, sizeof(Player*), playerCmp);
 
     return printTeamInfo(name);
 }
@@ -302,7 +307,8 @@ statusType teamNameSort()
     for (int i = 1; i < count; i++)
     {
         t = head.teamList;
-        for (int j = 1; j < count - i && t; j++)
+        s = t->next;
+        for (int j = 1; j <= count - i && t && s; j++)
         {
             s = t->next;
             if (strcmp(t->teamName, s->teamName) > 0)
@@ -311,7 +317,7 @@ statusType teamNameSort()
                 s->next = head.teamList;
                 head.teamList = s;
             }
-            t = t->next;
+            else t = t->next;
         }
     }
     return SUCCESS;
@@ -342,40 +348,62 @@ statusType teamSizeSort()
     return SUCCESS;
 }
 
-statusType isPlayerAvail(long playerID)
+statusType isPlayerAvail(char *playerID)
 {
     PlayerNode *p = findPlayer(playerID);
     if (!p) return MISSING_RECORD;
-    else if (!p->tmptr) printf("Player available\n");
+    else if (!p->tmptr) 
+        printf("Player available\n");
     else printTeamInfo(p->tmptr->teamName);
     return SUCCESS;
 }
 
-char* getTeamName()
+char* getString()
 {
-    static char str[MAXSTR];
-    printf("Enter team name:\n");
-    fflush(stdin);
-    gets(str);
-    return str;
+    char str[STRMAX];
+    scanf("%s", str);
+    char* sans = (char*) malloc((strlen(str) + 1) * sizeof(char));
+    strcpy(sans, str);
+    return sans;
 }
 
-long getID()
+char* getTeam(boolean chained)
 {
-    long ans;
-    printf("Insert ID:\n");
-    scanf("%ld", &ans);
-    return ans;
+    char str[STRMAX];
+    if (chained) getchar();
+    gets(str);
+    char* sans = (char*) malloc((strlen(str) + 1) * sizeof(char));
+    strcpy(sans, str);
+    return sans;
+}
+
+void writeDynString(FILE* pFile, char* str)
+{
+    int len = strlen(str);
+    fwrite(&len, sizeof(int), 1, pFile);
+    fwrite(str, sizeof(char), len, pFile);
+}
+
+statusType readDynString(FILE* pFile, char** str)
+{
+    int size;
+    fread(&size, sizeof(int), 1, pFile);
+    char *alloc = (char*) malloc((size + 1) * sizeof(char));
+    if (!alloc) return FAILURE;
+    alloc[size] = '\0';
+    fread(alloc, sizeof(char), size, pFile);
+    *str = alloc;
+    return SUCCESS;
 }
 
 statusType writeToFile()
 {
     FILE *pFile = fopen(FILE1, "w+b");
     if (!pFile) return FILE_ERROR;
-    Team *t = head.teamList;
     PlayerNode *p = head.playerList;
+    Team *t = head.teamList;
     Player **pptr;
-    int size = 0;
+    int size = 0, num;
     
     fwrite(&size, sizeof(int), 1, pFile);
     
@@ -383,6 +411,9 @@ statusType writeToFile()
     {
         size++;
         fwrite(p, sizeof(PlayerNode), 1, pFile);
+        writeDynString(pFile, p->PL.plyrID);
+        writeDynString(pFile, p->PL.firstName);
+        writeDynString(pFile, p->PL.lastName);
         p = p->next;
     }
 
@@ -398,11 +429,15 @@ statusType writeToFile()
     while (t)
     {
         size++;
-        t->players = pptr;
+        pptr = t->players;
+        num = t->num;
+        t->num = 0;
         t->players = NULL;
         fwrite(t, sizeof(Team), 1, pFile);
+        writeDynString(pFile, t->teamName);
         fwrite(&t, sizeof(Team*), 1, pFile);
         t->players = pptr;
+        t->num = num;
         t = t->next;
     }
 
@@ -429,6 +464,9 @@ statusType readFromFile()
         p = (PlayerNode*) malloc(sizeof(PlayerNode));
         if (!p) return FAILURE;
         fread(p, sizeof(PlayerNode), 1, pFile);
+        if (readDynString(pFile, &p->PL.plyrID) != SUCCESS) return FAILURE;
+        if (readDynString(pFile, &p->PL.firstName) != SUCCESS) return FAILURE;
+        if (readDynString(pFile, &p->PL.lastName) != SUCCESS) return FAILURE;
         p->next = head.playerList;
         head.playerList = p;
     }
@@ -442,6 +480,7 @@ statusType readFromFile()
         t = (Team*) malloc(sizeof(Team));
         if (!t) return FAILURE;
         fread(t, sizeof(Team), 1, pFile);
+        if (readDynString(pFile, &t->teamName) != SUCCESS) return FAILURE;
         fread(&s, sizeof(Team*), 1, pFile);
         t->next = head.teamList;
         head.teamList = t;
@@ -461,124 +500,6 @@ statusType readFromFile()
     fclose(pFile);
 
     return SUCCESS;
-}
-
-statusType exitProg()
-{
-    Team* t = head.teamList;
-    PlayerNode* p = head.playerList;
-    statusType s = EXIT;
-    
-    printf("Write changes to file? (1, 0)\n");
-    fflush(stdin);
-    if (getchar() == '1') s = writeToFile();
-    
-    while (p)
-    {
-        if (deletePlayer(p->PL.plyrID) == FAILURE) return FAILURE;
-        p = head.playerList;
-    }
-
-    while (t)
-    {
-        if (deleteTeam(t->teamName) == FAILURE) return FAILURE;
-        t = head.teamList;
-    }
-
-    return s;
-}
-
-statusType select(int selection)
-{
-    statusType s;
-    
-    switch(selection)
-    {
-        case 1:
-        {
-            long ID;
-            char str1[MAXSTR], str2[MAXSTR];
-            int age;
-            printf("Enter player info:\n");
-            scanf("%ld %s %s %d", &ID, str1, str2, &age);
-            s = insertPlayer(ID, str1, str2, age);
-
-            break;
-        }
-        case 2:
-        {
-            PlayerNode *p = findPlayer(getID());
-            if (!p) s = MISSING_RECORD;
-            else s = SUCCESS;
-
-            break;
-        }
-        case 3:
-            s = deletePlayer(getID());
-
-            break;
-        case 4:
-            s = insertTeam(getTeamName());
-
-            break;
-        case 5:
-        {
-            Team *t = findTeam(getTeamName());
-            if (!t) s = MISSING_RECORD;
-            else s = SUCCESS;
-
-            break;
-        }
-        case 6:
-            s = deleteTeam(getTeamName());
-
-            break;
-        case 7:
-            s = joinPlayerToTeam(getID(), getTeamName());
-
-            break;
-        case 8:
-            s = deletePlayerFromTeam(getID());
-
-            break;
-        case 9:
-            s = printPlayers();
-
-            break;
-        case 10:
-            s = printTeams();
-
-            break;
-        case 11:
-            s = printTeamInfo(getTeamName());
-
-            break;
-        case 12:
-            s = playerSort(getTeamName());
-
-            break;
-        case 13:
-            s = teamNameSort();
-
-            break;
-        case 14:
-            s = teamSizeSort();
-
-            break;
-        case 15:
-            s = isPlayerAvail(getID());
-
-            break;
-        case 16:
-            s = exitProg();
-
-            break;
-        default:
-            s = INVALID_INPUT;
-
-            break;
-    }
-    return s;
 }
 
 boolean handleStatus(statusType s)
@@ -617,7 +538,164 @@ boolean handleStatus(statusType s)
 
     return FALSE;
 }
-// todo: fix team sorts and deleteplayerfromteam seg fault and printteam seg fault after readfile
+
+statusType exitProg()
+{
+    Team* t = head.teamList;
+    PlayerNode* p = head.playerList;
+    
+    printf("Write changes to file? (1, 0)\n");
+    fflush(stdin);
+    if (getchar() == '1') 
+        if (handleStatus(writeToFile()))
+            return EXIT;
+
+    while (p)
+    {
+        if (deletePlayer(p->PL.plyrID) == FAILURE) return FAILURE;
+        p = head.playerList;
+    }
+
+    while (t)
+    {
+        if (deleteTeam(t->teamName) == FAILURE) return FAILURE;
+        t = head.teamList;
+    }
+
+    return EXIT;
+}
+
+statusType select(int selection)
+{
+    statusType s;
+    char* str = NULL;
+    
+    switch(selection)
+    {
+        case 1:
+        {
+            printf("Insert player, enter player info:\n");
+            char *id = getString(), *fn = getString(), *ln = getString();
+            int age;
+            scanf("%d", &age);
+            s = insertPlayer(id, fn, ln, age);
+
+            break;
+        }
+        case 2:
+        {
+            printf("Find player, enter ID:\n");
+            str = getString();
+            PlayerNode *p = findPlayer(str);
+            if (!p) s = MISSING_RECORD;
+            else s = SUCCESS;
+
+            break;
+        }
+        case 3:
+            printf("Delete player, enter ID:\n");
+            str = getString();
+            s = deletePlayer(str);
+
+            break;
+        case 4:
+        {
+            printf("Insert team, enter name:\n");
+            fflush(stdin);
+            char *str2 = getTeam(FALSE);
+            s = insertTeam(str2);
+
+            break;
+        }
+        case 5:
+        {
+            printf("Find team, enter name:\n");
+            fflush(stdin);
+            str = getTeam(FALSE);
+            Team *t = findTeam(str);
+            if (!t) s = MISSING_RECORD;
+            else s = SUCCESS;
+
+            break;
+        }
+        case 6:
+            printf("Delete team, enter name:\n");
+            fflush(stdin);
+            str = getTeam(FALSE);
+            s = deleteTeam(str);
+
+            break;
+        case 7:
+        {
+            printf("Add player to team, enter ID and name:\n");
+            str = getString();
+            char *str2 = getTeam(TRUE);
+            s = joinPlayerToTeam(str, str2);
+            free(str2);
+
+            break;
+        }
+        case 8:
+            printf("Remove player from team, enter ID:\n");
+            str = getString();
+            s = deletePlayerFromTeam(str);
+
+            break;
+        case 9:
+            printf("Players in the league:\n");
+            s = printPlayers();
+
+            break;
+        case 10:
+            printf("Teams in the league:\n");
+            s = printTeams();
+
+            break;
+        case 11:
+            printf("Enter team name to print:\n");
+            fflush(stdin);
+            str = getTeam(FALSE);
+            s = printTeamInfo(str);
+
+            break;
+        case 12:
+            printf("Enter team with players to sort:\n");
+            fflush(stdin);
+            str = getTeam(FALSE);
+            s = playerSort(str);
+
+            break;
+        case 13:
+            printf("Sorting teams by name...\n");
+            s = teamNameSort();
+
+            break;
+        case 14:
+            printf("Sorting teams by number of players...\n");
+            s = teamSizeSort();
+
+            break;
+        case 15:
+            printf("Check if player is available, insert ID:\n");
+            str = getString();
+            s = isPlayerAvail(str);
+
+            break;
+        case 16:
+            s = exitProg();
+
+            break;
+        default:
+            s = INVALID_INPUT;
+
+            break;
+    }
+    if (str) free(str);
+
+    return s;
+}
+
+// todo: fix team sorts
 int main()
 {
     head.teamList = NULL;
@@ -634,6 +712,7 @@ int main()
     while (!exit)
     {
         printf("Enter selection: (1-16)\n");
+        fflush(stdin);
         scanf("%d", &selection);
         exit = handleStatus(select(selection));
     }
