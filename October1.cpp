@@ -37,19 +37,37 @@ int findOdd(int num)
 }
 
 int isRising(int num)
+{   
+    if (num < 10) return 1;
+    else if ((num % 10 > (num / 10) % 10) && isRising(num / 10))
+        return 1;
+    else return 0;
+}
+
+void printBigNum(int num)
 {
+    if (num < 1000)
+    {
+        printf("%d,", num);
+        return;
+    }
+    else
+    {
+        printBigNum(num / 1000);
+        printf("%d,",num % 1000);
+    }
     
 }
 
 int main()
 {
-    int num = 13245;
+    int num = 1234567;
     printf("%d\n", find5(num));
     printf("%d\n", sumDigits(num));
     printf("%d\n", sumPosDigits(num));
     printf("%d\n", findOdd(num));
     printf("%d\n", isRising(num));
-
+    printBigNum(num);
 
     return 0;
 }
