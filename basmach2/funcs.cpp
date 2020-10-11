@@ -1,69 +1,4 @@
-#define _CRT_SECURE_NO_WARNINGS
-
-#include <stdio.h>
-
-#define MAPROW 100
-#define MAPCOL 200
-#define WALLSIZE 1
-
-#define DIRECTIONS 4
-
-typedef struct Direction 
-{
-    int nLine;
-    int nCol;
-};
-
-typedef struct Trof
-{
-    int nIT;
-    int nJT;
-
-    int nSx;
-    Direction sDx[DIRECTIONS + 1];
-};
-
-int TestTrons(Trof* sTrof, Direction sDrc,
-                int* nTronAmount, int mMat[][MAPCOL + WALLSIZE * 2]);
-int TrofCheckCells(int mMat[][MAPCOL + WALLSIZE * 2],
-                 Trof* sTrof, int* nTronAmount, Direction sDrc);
-void GetTrof(Trof* sTrof);
-void TrofLoop(Trof sTrof, int mMat[][MAPCOL + WALLSIZE * 2], int nTronAmount);
-void GetTrons(int mMat[][MAPCOL + WALLSIZE * 2], int* nTronAmount);
-void TickInt(int* nNum, int* bRising);
-void SetDirections(Trof* sTrof);
-
-//-----------------------------------------------------------------------------
-// TRON AND TROF
-// -----------
-//
-// General : This is a simulation of the TRON and TROF war.
-//
-// Input : Infromation about the TRONs and TROF.
-//
-// Process : Simulate the war.
-//
-// Output : Prints events in the war and the results.
-//
-//-----------------------------------------------------------------------------
-// Programmer : Gonen Cohen
-// Student No : N/A
-// Date : 20.09.2020
-//-----------------------------------------------------------------------------
-
-int main()
-{
-    int mMap[MAPROW + WALLSIZE * 2][MAPCOL + WALLSIZE * 2] = {0};
-    int nTronAmount = 0;
-
-    Trof sTrof;
-
-    SetDirections(&sTrof, -1, 0, 0, 1);
-    GetTrons(mMap, &nTronAmount);
-    TrofLoop(sTrof, mMap, nTronAmount);
-
-    return 0;
-}
+#include "header.h"
 
 //-----------------------------------------------------------------------------
 // TestTrons
@@ -83,43 +18,43 @@ int main()
 //-----------------------------------------------------------------------------
 
 int TestTrons(Trof* sTrof, Direction sDrc,
-                int* nTronAmount, int mMat[][MAPCOL + WALLSIZE * 2])
+    int* nTronAmount, int mMat[][MAPCOL + WALLSIZE * 2])
 {
     int nTrons;
 
     int nYOffset = sTrof->nIT + sDrc.nLine;
     int nXOffset = sTrof->nJT + sDrc.nCol;
-    
+
     // Check if cell is inside the wall
     if (nXOffset >= WALLSIZE && nXOffset <= MAPROW + WALLSIZE - 1 &&
-        nYOffset >= WALLSIZE && nYOffset <= MAPCOL + WALLSIZE - 1)        
+        nYOffset >= WALLSIZE && nYOffset <= MAPCOL + WALLSIZE - 1)
+    {
+        nTrons = mMat[nXOffset][nYOffset];
+        printf("\nTROF advanced to (%d, %d) and encountered %d TRONS\n",
+            nXOffset, nYOffset, nTrons);
+        if (nTrons > 2)
         {
-            nTrons = mMat[nXOffset][nYOffset];
-            printf("\nTROF advanced to (%d, %d) and encountered %d TRONS\n",
-                    nXOffset, nYOffset, nTrons);
-            if (nTrons > 2)
-            {
-                printf("\nTROF tried to eat too many TRONs and died.\n");
-                mMat[nXOffset][nYOffset] = nTrons - 2;
-                *nTronAmount -= 2;
-                printf("%d TRONs were left. Game Over.\n", *nTronAmount);
-                return 0;
-            }
-            else 
-            {
-                printf("TROF ate %d TRONs and decided to keep going.\n", nTrons);
-                mMat[nXOffset][nYOffset] = 0;
-                *nTronAmount -= nTrons;
-            }
-    
-            sTrof->nIT = nYOffset;
-            sTrof->nJT = nXOffset;
+            printf("\nTROF tried to eat too many TRONs and died.\n");
+            mMat[nXOffset][nYOffset] = nTrons - 2;
+            *nTronAmount -= 2;
+            printf("%d TRONs were left. Game Over.\n", *nTronAmount);
+            return 0;
         }
         else
         {
-            printf("\nTROF stopped at the border of the planet.\n");
+            printf("TROF ate %d TRONs and decided to keep going.\n", nTrons);
+            mMat[nXOffset][nYOffset] = 0;
+            *nTronAmount -= nTrons;
         }
-    
+
+        sTrof->nIT = nYOffset;
+        sTrof->nJT = nXOffset;
+    }
+    else
+    {
+        printf("\nTROF stopped at the border of the planet.\n");
+    }
+
     return 1;
 }
 
@@ -141,7 +76,7 @@ int TestTrons(Trof* sTrof, Direction sDrc,
 //-----------------------------------------------------------------------------
 
 int TrofCheckCells(int mMat[][MAPCOL + WALLSIZE * 2],
-                 Trof* sTrof, int* nTronAmount, Direction sDrc)
+    Trof* sTrof, int* nTronAmount, Direction sDrc)
 {
     // Check if this is the first arrival of TROF or taking steps
     if (sTrof->nSx)
@@ -194,14 +129,14 @@ void TrofLoop(Trof sTrof, int mMat[][MAPCOL + WALLSIZE * 2], int nTronAmount)
 {
     GetTrof(&sTrof);
 
-    int nDirection = 0, nTrons = mMat[sTrof.nIT][sTrof.nJT];    
+    int nDirection = 0, nTrons = mMat[sTrof.nIT][sTrof.nJT];
     sTrof.nSx = 0;
     char c;
 
     do
     {
         // Check if TROF is still alive after taking steps or arriving
-        if(!TrofCheckCells(mMat, &sTrof, &nTronAmount, sTrof.sDx[nDirection])) 
+        if (!TrofCheckCells(mMat, &sTrof, &nTronAmount, sTrof.sDx[nDirection]))
             return;
 
         printf("\nInsert number of steps to take: ");
@@ -235,7 +170,7 @@ void GetTrons(int mMat[][MAPCOL + WALLSIZE * 2], int* nTronAmount)
     scanf("%d", nTronAmount);
     printf("\nThe map size is %d rows and %d columns\n", MAPROW, MAPCOL);
 
-    for(int i = 1; i <= *nTronAmount; i++)
+    for (int i = 1; i <= *nTronAmount; i++)
     {
         printf("\nInsert X location (1 - %d) for TRON #%d: ", MAPROW, i);
         scanf("%d", &nIx);
@@ -264,24 +199,24 @@ void TickInt(int* nNum, int* bRising)
     {
         // If rising rise until 1 and start to fall again
         // Like a clockwise motion in a matrix
-        case 0:
-            if (*bRising) *nNum = 1;
-            else *nNum = -1;
+    case 0:
+        if (*bRising) *nNum = 1;
+        else *nNum = -1;
 
-            break;
-        case 1:
-            *nNum = 0;
-            *bRising = 0;
+        break;
+    case 1:
+        *nNum = 0;
+        *bRising = 0;
 
-            break;
-        case -1:
-            *nNum = 0;
-            *bRising = 1;
+        break;
+    case -1:
+        *nNum = 0;
+        *bRising = 1;
 
-            break;
-        default:
+        break;
+    default:
 
-            break;
+        break;
     }
 }
 

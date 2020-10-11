@@ -1,48 +1,4 @@
-#define _CRT_SECURE_NO_WARNINGS
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#define FILE1 "PROJECT1.DAT"
-#define STRMAX 50
-
-typedef enum {FAILURE, SUCCESS, INVALID_INPUT, FILE_ERROR,
-            DUPLICATE_RECORD, MISSING_RECORD, EXIT} statusType;
-
-typedef enum {FALSE, TRUE} boolean;
-
-typedef struct Player
-{
-    char *plyrID;
-    char *firstName;
-    char *lastName;
-    int age;
-};
-
-typedef struct PlayerNode
-{
-    Player PL;
-    struct Team *tmptr;
-    struct PlayerNode *next;
-};
-
-typedef struct Team
-{
-    char *teamName;
-    int num;
-    Player **players;
-    struct Team *next;
-};
-
-typedef struct headType
-{
-    struct Team *teamList;
-    struct PlayerNode *playerList;
-}
-headder, *headPtr;
-
-headder head;
+#include "header.h"
 
 struct PlayerNode* findPlayer(char* playerID)
 {
@@ -744,28 +700,4 @@ statusType select(int selection)
 	if (str) free(str);
 
 	return s;
-}
-
-int main()
-{
-    head.teamList = NULL;
-    head.playerList = NULL;
-
-    boolean exit = FALSE;
-
-    printf("Would you like to read from file? (1, 0)\n");
-    fflush(stdin);
-    if(getchar() == '1') exit = handleStatus(readFromFile());
-
-    int selection = 0;
-
-    while (!exit)
-    {
-        printf("Enter selection: (1-16)\n");
-        fflush(stdin);
-        scanf("%d", &selection);
-        exit = handleStatus(select(selection));
-    }
-
-    return 0;
 }
