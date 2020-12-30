@@ -1,0 +1,4 @@
+TASM /zi %1
+TLINK /v %1
+PAUSE
+TD %1
