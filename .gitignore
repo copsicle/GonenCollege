@@ -8,8 +8,10 @@
 !*.*
 
 *.exe
-*.map
+*.EXE
+*.MAP
 *.TR
+*.OBJ
 
 # User-specific files
 *.rsuser
