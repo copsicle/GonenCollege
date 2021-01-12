@@ -29,5 +29,3 @@ exit:
 	int 21h
 CODE ENDS
 END start
-
-
