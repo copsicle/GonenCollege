@@ -13,6 +13,8 @@
 *.TR
 *.OBJ
 
+assembly/CG/
+
 # User-specific files
 *.rsuser
 *.suo
