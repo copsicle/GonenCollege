@@ -65,8 +65,9 @@ next:
 inputNum ENDP
 
 series PROC
+	push bp
 	mov bp, sp
-	mov ax, [bp + 2]
+	mov ax, [bp + 4]
 	; Check if at the end of the series
 	cmp ax, 1
 	je end_series
@@ -85,12 +86,12 @@ recurse:
 	call series
 end_series:
 	; Regain bp and print
-	mov bp, sp
-	mov ax, [bp + 2]
+	mov ax, [bp + 4]
 	call print
 	; Write to array
 	mov [bx], ax
 	add bx, 2
+	pop bp
 	ret 2
 series ENDP
 
