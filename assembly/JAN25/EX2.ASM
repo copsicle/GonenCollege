@@ -88,8 +88,10 @@ l3:
 	mov dl, [bx]
 	add dl, '0'
 	int 21h
+	; Space
 	mov dl, 32
 	int 21h
+	; Go to next item in the array and loop
 	inc bx
 	loop l3
 	; New line - CRLF

@@ -41,7 +41,7 @@ inputNum PROC
 	xor dx, dx
 l1:
 	; Get a character
-	mov ah,1
+	mov ah, 1h
     int 21h
 	; Check if its enter
 	cmp al, 13
