@@ -85,11 +85,11 @@ recurse:
 	push ax
 	call series
 end_series:
-	; Regain bp and print
+	; Write to array and print
 	mov ax, [bp + 4]
-	call print
-	; Write to array
 	mov [bx], ax
+	call print
+	; Got to next array address to write
 	add bx, 2
 	pop bp
 	ret 2
