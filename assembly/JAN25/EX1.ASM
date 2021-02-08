@@ -41,7 +41,7 @@ inputNum PROC
 	xor dx, dx
 l1:
 	; Get a character
-	mov ah,1
+	mov ah, 1h
     int 21h
 	; Check if its enter
 	cmp al, 13
@@ -65,8 +65,9 @@ next:
 inputNum ENDP
 
 series PROC
+	push bp
 	mov bp, sp
-	mov ax, [bp + 2]
+	mov ax, [bp + 4]
 	; Check if at the end of the series
 	cmp ax, 1
 	je end_series
@@ -84,13 +85,13 @@ recurse:
 	push ax
 	call series
 end_series:
-	; Regain bp and print
-	mov bp, sp
-	mov ax, [bp + 2]
-	call print
-	; Write to array
+	; Write to array and print
+	mov ax, [bp + 4]
 	mov [bx], ax
+	call print
+	; Got to next array address to write
 	add bx, 2
+	pop bp
 	ret 2
 series ENDP
 
