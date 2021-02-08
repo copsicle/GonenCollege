@@ -9,9 +9,8 @@ DATA ENDS
 CODE SEGMENT
 	ASSUME CS:CODE, DS:DATA
 start:
-	mov ax, DATA
-	mov ds, ax
-	xor ax, ax
+	push DATA
+	pop ds
 	
 	
 	
